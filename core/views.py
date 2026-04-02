@@ -1,5 +1,6 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import viewsets
 
 from .models import User, Post, Comment, Like
@@ -10,6 +11,28 @@ from .serializers import (
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    @action(detail=True, methods=['post'])
+    def follow(self, request, pk=None):
+        user_to_follow = self.get_object() 
+        current_user = request.user        
+
+        if user_to_follow == current_user:
+            return Response(
+                {"detail": "Você não pode seguir a si mesmo."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        current_user.following.add(user_to_follow)
+        return Response({"detail": f"Você agora está seguindo {user_to_follow.username}."})
+
+    @action(detail=True, methods=['post'])
+    def unfollow(self, request, pk=None):
+        user_to_unfollow = self.get_object()
+        current_user = request.user
+
+        current_user.following.remove(user_to_unfollow)
+        return Response({"detail": f"Você deixou de seguir {user_to_unfollow.username}."})
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
