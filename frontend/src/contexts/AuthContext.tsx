@@ -1,4 +1,5 @@
 import { createContext, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 
 interface AuthContextData {
@@ -17,6 +18,8 @@ export const AuthContext = createContext<AuthContextData>(
 );
 
 export function AuthProvider({ children }: AuthProviderProps) {
+  const navigate = useNavigate();
+
   const [token, setToken] = useState<string | null>(() => {
     const tokenOnStorage = localStorage.getItem("@CloneX:token");
     if (tokenOnStorage) {
@@ -36,7 +39,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       api.defaults.headers.common["Authorization"] = `Bearer ${access}`;
 
       setToken(access);
-      alert("Login realizado com sucesso!");
+      navigate("/feed");
     } catch (error) {
       console.error("Erro no login:", error);
       alert("Usuário ou senha incorretos.");
@@ -47,6 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.removeItem("@CloneX:token");
     delete api.defaults.headers.common["Authorization"];
     setToken(null);
+    navigate("/login");
   }
 
   return (
