@@ -1,13 +1,16 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Container, LoginBox, Title, Input, Button } from "./styles";
+import { AuthContext } from "../../contexts/AuthContext";
 
 export function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleLogin(event: React.SyntheticEvent) {
+  const { signIn } = useContext(AuthContext);
+
+  async function handleLogin(event: React.SyntheticEvent) {
     event.preventDefault();
-    console.log("Dados prontos para o Axios:", { username, password });
+    await signIn(username, password);
   }
 
   return (
