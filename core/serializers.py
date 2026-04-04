@@ -7,7 +7,23 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'bio', 'profile_picture', 'followers_count', 'following_count']
+        fields = '__all__'
+
+        read_only_fields = ('last_login', 'date_joined', 'is_superuser', 'is_staff', 'is_active', 'groups', 'user_permissions')
+
+        extra_kwargs = {
+            'password': {'write_only': True} 
+        }
+
+    def create(self, validated_data):
+        password = validated_data.pop('password', None)
+        user = super().create(validated_data)
+        
+        if password:
+            user.set_password(password)
+            user.save()
+            
+        return user 
 
     def get_followers_count(self, obj):
         return obj.followers.count()
