@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import {
@@ -13,6 +14,7 @@ import {
 } from "./styles";
 
 export function Login() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { signIn } = useContext(AuthContext);
@@ -44,7 +46,8 @@ export function Login() {
         <PrimaryButton type="submit">Avançar</PrimaryButton>
         <OutlineButton type="button">Esqueceu a senha?</OutlineButton>
         <LinksContainer>
-          Não tem uma conta? <NavLink>Inscreva-se</NavLink>
+          Não tem uma conta?{" "}
+          <NavLink onClick={() => navigate("/signup")}>Inscreva-se</NavLink>
         </LinksContainer>
       </LoginBox>
     </Container>

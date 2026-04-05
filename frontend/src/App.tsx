@@ -1,3 +1,4 @@
+import { Signup } from "./pages/Signup";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Feed } from "./pages/Feed";
@@ -8,6 +9,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
+          <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/feed" element={<Feed />} />
