@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/api";
 import {
@@ -9,6 +9,10 @@ import {
   AuthorName,
   PostContent,
   PostActions,
+  TweetForm,
+  TweetInput,
+  TweetButtonContainer,
+  TweetButton,
 } from "./styles";
 
 interface Post {
@@ -22,8 +26,9 @@ interface Post {
 
 export function Feed() {
   const { signOut } = useContext(AuthContext);
-
   const [posts, setPosts] = useState<Post[]>([]);
+
+  const [newPostContent, setNewPostContent] = useState("");
 
   useEffect(() => {
     async function loadPosts() {
@@ -34,9 +39,25 @@ export function Feed() {
         console.error("Erro ao carregar o feed:", error);
       }
     }
-
     loadPosts();
   }, []);
+
+  async function handleCreatePost(event: React.SyntheticEvent) {
+    event.preventDefault();
+
+    if (!newPostContent.trim()) return;
+
+    try {
+      const response = await api.post("posts/", { content: newPostContent });
+
+      setPosts((prevPosts) => [response.data, ...prevPosts]);
+
+      setNewPostContent("");
+    } catch (error) {
+      console.error("Erro ao criar post:", error);
+      alert("Erro ao publicar o post.");
+    }
+  }
 
   return (
     <FeedContainer>
@@ -44,6 +65,20 @@ export function Feed() {
         <h1>Página Inicial</h1>
         <LogoutButton onClick={signOut}>Sair</LogoutButton>
       </Header>
+
+      <TweetForm onSubmit={handleCreatePost}>
+        <TweetInput
+          placeholder="O que está acontecendo?"
+          value={newPostContent}
+          onChange={(e) => setNewPostContent(e.target.value)}
+          maxLength={280} // Limite clássico do X
+        />
+        <TweetButtonContainer>
+          <TweetButton type="submit" disabled={!newPostContent.trim()}>
+            Postar
+          </TweetButton>
+        </TweetButtonContainer>
+      </TweetForm>
 
       {posts.map((post) => (
         <PostCard key={post.id}>
@@ -59,7 +94,7 @@ export function Feed() {
 
       {posts.length === 0 && (
         <p style={{ textAlign: "center", marginTop: "20px", color: "#71767b" }}>
-          Nenhum post para mostrar. Siga alguém!
+          Nenhum post para mostrar.
         </p>
       )}
     </FeedContainer>

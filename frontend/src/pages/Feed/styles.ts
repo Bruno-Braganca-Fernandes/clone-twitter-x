@@ -71,3 +71,53 @@ export const PostActions = styled.div`
   font-size: 13px;
   margin-top: 8px;
 `;
+
+export const TweetForm = styled.form`
+  padding: 16px;
+  border-bottom: 1px solid #2f3336;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const TweetInput = styled.textarea`
+  background-color: transparent;
+  border: none;
+  color: #e7e9ea;
+  font-size: 1.2rem;
+  resize: none;
+  min-height: 80px;
+  outline: none;
+  font-family: inherit;
+
+  &::placeholder {
+    color: #71767b;
+  }
+`;
+
+export const TweetButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+  border-top: 1px solid #2f3336;
+  padding-top: 12px;
+`;
+
+export const TweetButton = styled.button`
+  background-color: #1d9bf0;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: #1a8cd8;
+  }
+
+  &:disabled {
+    background-color: #0f4e78;
+    color: #8b98a5;
+    cursor: not-allowed;
+  }
+`;
