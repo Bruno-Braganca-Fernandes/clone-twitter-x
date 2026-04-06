@@ -13,6 +13,7 @@ import {
   TweetInput,
   TweetButtonContainer,
   TweetButton,
+  ActionButton,
 } from "./styles";
 
 interface Post {
@@ -59,6 +60,22 @@ export function Feed() {
     }
   }
 
+  async function handleLike(postId: number) {
+    try {
+      const response = await api.post(`posts/${postId}/like/`);
+
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, likes_count: response.data.likes_count }
+            : post,
+        ),
+      );
+    } catch (error) {
+      console.error("Erro ao curtir post:", error);
+    }
+  }
+
   return (
     <FeedContainer>
       <Header>
@@ -86,8 +103,17 @@ export function Feed() {
           <PostContent>{post.content}</PostContent>
 
           <PostActions>
-            <span>💬 {post.comments_count}</span>
-            <span>❤️ {post.likes_count}</span>
+            <ActionButton type="button" activeColor="#1d9bf0">
+              💬 {post.comments_count}
+            </ActionButton>
+            <ActionButton
+              type="button"
+              onClick={() => handleLike(post.id)}
+              active={post.likes_count > 0}
+              activeColor="#f91880"
+            >
+              ❤️ {post.likes_count}
+            </ActionButton>
           </PostActions>
         </PostCard>
       ))}
