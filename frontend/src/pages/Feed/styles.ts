@@ -121,3 +121,21 @@ export const TweetButton = styled.button`
     cursor: not-allowed;
   }
 `;
+
+export const ActionButton = styled.button<{ active?: boolean; activeColor?: string }>`
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: ${props => props.active ? props.activeColor : '#71767b'};
+  font-size: 13px;
+  transition: 0.2s;
+
+  &:hover {
+    color: ${props => props.activeColor};
+  }
+
+  svg {
+    font-size: 18px;
+  }
+`;

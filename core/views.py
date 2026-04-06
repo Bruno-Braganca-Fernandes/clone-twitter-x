@@ -58,6 +58,27 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['post'])
+    def like(self, request, pk=None):
+        post = self.get_object()
+        user = request.user
+
+        like_exists = Like.objects.filter(post=post, user=user).exists()
+
+        if like_exists:
+            Like.objects.filter(post=post, user=user).delete()
+            liked = False
+        else:
+            Like.objects.create(post=post, user=user)
+            liked = True
+
+        total_likes = Like.objects.filter(post=post).count()
+
+        return Response({
+            'liked': liked,
+            'likes_count': total_likes
+        })
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
     serializer_class = CommentSerializer
