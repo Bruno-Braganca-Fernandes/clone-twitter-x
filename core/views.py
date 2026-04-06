@@ -53,8 +53,10 @@ class PostViewSet(viewsets.ModelViewSet):
         
         following_users = user.following.all()
         
-        queryset = Post.objects.filter(author__in=following_users).order_by('-created_at')
-        
+        queryset = Post.objects.filter(author__in=following_users) | Post.objects.filter(author=user)
+
+        queryset = queryset.order_by('-created_at').distinct()
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
