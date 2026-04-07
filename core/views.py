@@ -64,6 +64,11 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def like(self, request, pk=None):
         post = self.get_object()
+        comments = Comment.objects.filter(post=post).order_by('created_at')
+
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+
         user = request.user
 
         like_exists = Like.objects.filter(post=post, user=user).exists()

@@ -15,6 +15,11 @@ import {
   TweetButtonContainer,
   TweetButton,
   ActionButton,
+  CommentsSection,
+  CommentForm,
+  CommentList,
+  CommentInput,
+  CommentItem,
 } from "./styles";
 
 interface Post {
@@ -26,12 +31,21 @@ interface Post {
   comments_count: number;
 }
 
+interface CommentData {
+  id: number;
+  author_username: string;
+  content: string;
+}
+
 export function Feed() {
   const { signOut } = useContext(AuthContext);
   const [posts, setPosts] = useState<Post[]>([]);
   const navigate = useNavigate();
-
   const [newPostContent, setNewPostContent] = useState("");
+
+  const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
+  const [postComments, setPostComments] = useState<CommentData[]>([]);
+  const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
     async function loadPosts() {
@@ -75,6 +89,46 @@ export function Feed() {
       );
     } catch (error) {
       console.error("Erro ao curtir post:", error);
+    }
+  }
+
+  async function toggleComments(postId: number) {
+    if (expandedPostId === postId) {
+      setExpandedPostId(null);
+      return;
+    }
+
+    setExpandedPostId(postId);
+    try {
+      const response = await api.get(`posts/${postId}/comments/`);
+      setPostComments(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar comentários", error);
+    }
+  }
+
+  async function handleAddComment(event: React.SyntheticEvent, postId: number) {
+    event.preventDefault();
+    if (!newComment.trim()) return;
+
+    try {
+      const response = await api.post("comments/", {
+        post: postId,
+        content: newComment,
+      });
+
+      setPostComments([...postComments, response.data]);
+      setNewComment("");
+
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, comments_count: post.comments_count + 1 }
+            : post,
+        ),
+      );
+    } catch (error) {
+      console.error("Erro ao enviar comentário", error);
     }
   }
 
@@ -123,7 +177,12 @@ export function Feed() {
           <PostContent>{post.content}</PostContent>
 
           <PostActions>
-            <ActionButton type="button" activeColor="#1d9bf0">
+            <ActionButton
+              type="button"
+              activeColor="#1d9bf0"
+              onClick={() => toggleComments(post.id)}
+              active={expandedPostId === post.id}
+            >
               💬 {post.comments_count}
             </ActionButton>
             <ActionButton
@@ -135,6 +194,44 @@ export function Feed() {
               ❤️ {post.likes_count}
             </ActionButton>
           </PostActions>
+          {expandedPostId === post.id && (
+            <CommentsSection>
+              <CommentForm onSubmit={(e) => handleAddComment(e, post.id)}>
+                <CommentInput
+                  placeholder="Postar sua resposta"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                />
+                <TweetButton
+                  type="submit"
+                  disabled={!newComment.trim()}
+                  style={{ padding: "6px 12px", fontSize: "13px" }}
+                >
+                  Responder
+                </TweetButton>
+              </CommentForm>
+
+              <CommentList>
+                {postComments.map((comment) => (
+                  <CommentItem key={comment.id}>
+                    <strong>{comment.author_username}</strong>
+                    <span>{comment.content}</span>
+                  </CommentItem>
+                ))}
+                {postComments.length === 0 && (
+                  <p
+                    style={{
+                      color: "#71767b",
+                      fontSize: "13px",
+                      textAlign: "center",
+                    }}
+                  >
+                    Sem respostas ainda. Seja o primeiro!
+                  </p>
+                )}
+              </CommentList>
+            </CommentsSection>
+          )}
         </PostCard>
       ))}
 
