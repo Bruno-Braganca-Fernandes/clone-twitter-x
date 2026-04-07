@@ -82,7 +82,21 @@ export function Feed() {
     <FeedContainer>
       <Header>
         <h1>Página Inicial</h1>
-        <LogoutButton onClick={signOut}>Sair</LogoutButton>
+        <div style={{ display: "flex", gap: "16px" }}>
+          <button
+            onClick={() => navigate("/explore")}
+            style={{
+              background: "transparent",
+              color: "#1d9bf0",
+              border: "none",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            Explorar 🔍
+          </button>
+          <LogoutButton onClick={signOut}>Sair</LogoutButton>
+        </div>
       </Header>
 
       <TweetForm onSubmit={handleCreatePost}>
@@ -90,7 +104,7 @@ export function Feed() {
           placeholder="O que está acontecendo?"
           value={newPostContent}
           onChange={(e) => setNewPostContent(e.target.value)}
-          maxLength={280} // Limite clássico do X
+          maxLength={280}
         />
         <TweetButtonContainer>
           <TweetButton type="submit" disabled={!newPostContent.trim()}>

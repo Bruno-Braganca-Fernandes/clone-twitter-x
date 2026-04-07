@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Feed } from "./pages/Feed";
 import { AuthProvider } from "./contexts/AuthContext";
+import { Explore } from "./pages/Explore";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/feed" element={<Feed />} />
           <Route path="/profile/:username" element={<Profile />} />
+          <Route path="/explore" element={<Explore />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
