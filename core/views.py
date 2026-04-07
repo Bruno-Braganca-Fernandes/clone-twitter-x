@@ -12,6 +12,7 @@ from .serializers import (
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    lookup_field = 'username'
 
     def get_permissions(self):
         if self.action == 'create':
@@ -19,7 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
     @action(detail=True, methods=['post'])
-    def follow(self, request, pk=None):
+    def follow(self, request, username=None):
         user_to_follow = self.get_object() 
         current_user = request.user        
 
@@ -33,7 +34,7 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({"detail": f"Você agora está seguindo {user_to_follow.username}."})
 
     @action(detail=True, methods=['post'])
-    def unfollow(self, request, pk=None):
+    def unfollow(self, request, username=None):
         user_to_unfollow = self.get_object()
         current_user = request.user
 
