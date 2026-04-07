@@ -55,6 +55,7 @@ export const AuthorName = styled.span`
   font-weight: bold;
   font-size: 1rem;
   color: #e7e9ea;
+  cursor: pointer;
 `;
 
 export const PostContent = styled.p`

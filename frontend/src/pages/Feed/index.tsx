@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 import {
   FeedContainer,
   Header,
@@ -28,6 +29,7 @@ interface Post {
 export function Feed() {
   const { signOut } = useContext(AuthContext);
   const [posts, setPosts] = useState<Post[]>([]);
+  const navigate = useNavigate();
 
   const [newPostContent, setNewPostContent] = useState("");
 
@@ -99,7 +101,11 @@ export function Feed() {
 
       {posts.map((post) => (
         <PostCard key={post.id}>
-          <AuthorName>{post.author_username}</AuthorName>
+          <AuthorName
+            onClick={() => navigate(`/profile/${post.author_username}`)}
+          >
+            {post.author_username}
+          </AuthorName>
           <PostContent>{post.content}</PostContent>
 
           <PostActions>
