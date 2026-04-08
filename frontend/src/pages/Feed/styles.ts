@@ -140,3 +140,52 @@ export const ActionButton = styled.button<{ active?: boolean; activeColor?: stri
     font-size: 18px;
   }
 `;
+
+export const CommentsSection = styled.div`
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #2f3336;
+`;
+
+export const CommentForm = styled.form`
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+`;
+
+export const CommentInput = styled.input`
+  flex: 1;
+  background-color: transparent;
+  border: 1px solid #2f3336;
+  color: #e7e9ea;
+  padding: 8px 12px;
+  border-radius: 4px;
+  outline: none;
+
+  &:focus {
+    border-color: #1d9bf0;
+  }
+`;
+
+export const CommentList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const CommentItem = styled.div`
+  background-color: rgba(255, 255, 255, 0.02);
+  padding: 10px;
+  border-radius: 8px;
+  
+  strong {
+    color: #e7e9ea;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+  
+  span {
+    color: #eff3f4;
+    font-size: 14px;
+  }
+`;
