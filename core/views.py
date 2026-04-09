@@ -41,6 +41,21 @@ class UserViewSet(viewsets.ModelViewSet):
         current_user.following.remove(user_to_unfollow)
         return Response({"detail": f"Você deixou de seguir {user_to_unfollow.username}."})
 
+    @action(detail=False, methods=['get', 'patch'])
+    def me(self, request):
+        user = request.user
+
+        if request.method == 'GET':
+            serializer = self.get_serializer(user)
+            return Response(serializer.data)
+            
+        elif request.method == 'PATCH':
+            serializer = self.get_serializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer

@@ -123,12 +123,12 @@ export const TweetButton = styled.button`
   }
 `;
 
-export const ActionButton = styled.button<{ active?: boolean; activeColor?: string }>`
+export const ActionButton = styled.button<{ $active?: boolean; activeColor?: string }>`
   background: transparent;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: ${props => props.active ? props.activeColor : '#71767b'};
+  color: ${props => props.$active ? props.activeColor : '#71767b'};
   font-size: 13px;
   transition: 0.2s;
 

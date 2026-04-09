@@ -5,6 +5,7 @@ import { Login } from "./pages/Login";
 import { Feed } from "./pages/Feed";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Explore } from "./pages/Explore";
+import { Settings } from "./pages/Settings";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/feed" element={<Feed />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route path="/explore" element={<Explore />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>

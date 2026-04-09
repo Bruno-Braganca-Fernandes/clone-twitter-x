@@ -149,6 +149,18 @@ export function Feed() {
           >
             Explorar 🔍
           </button>
+          <button
+            onClick={() => navigate("/settings")}
+            style={{
+              background: "transparent",
+              color: "#eff3f4",
+              border: "none",
+              fontWeight: "bold",
+              cursor: "pointer",
+            }}
+          >
+            ⚙️ Perfil
+          </button>
           <LogoutButton onClick={signOut}>Sair</LogoutButton>
         </div>
       </Header>
@@ -181,14 +193,14 @@ export function Feed() {
               type="button"
               activeColor="#1d9bf0"
               onClick={() => toggleComments(post.id)}
-              active={expandedPostId === post.id}
+              $active={expandedPostId === post.id}
             >
               💬 {post.comments_count}
             </ActionButton>
             <ActionButton
               type="button"
               onClick={() => handleLike(post.id)}
-              active={post.likes_count > 0}
+              $active={post.likes_count > 0}
               activeColor="#f91880"
             >
               ❤️ {post.likes_count}
