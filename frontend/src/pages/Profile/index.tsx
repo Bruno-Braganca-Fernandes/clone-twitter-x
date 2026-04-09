@@ -14,7 +14,7 @@ import {
   ProfileUsername,
   BioText,
   StatsContainer,
-} from "./style";
+} from "./styles";
 
 interface UserProfile {
   id: number;
@@ -23,6 +23,7 @@ interface UserProfile {
   following_count: number;
   bio: string | null;
   is_following: boolean;
+  profile_picture: string | null;
 }
 
 export function Profile() {
@@ -97,7 +98,22 @@ export function Profile() {
 
       <ProfileDetails>
         <ProfileHeaderRow>
-          <Avatar />
+          {/* Se o usuário tiver foto, mostra a imagem. Se não tiver, mostra o círculo vazio */}
+          {profile?.profile_picture ? (
+            <img
+              src={profile.profile_picture}
+              alt="Foto de perfil"
+              style={{
+                width: "120px",
+                height: "120px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                border: "4px solid black",
+              }}
+            />
+          ) : (
+            <Avatar />
+          )}
           <FollowButton
             onClick={handleFollowToggle}
             $isFollowing={profile?.is_following}
