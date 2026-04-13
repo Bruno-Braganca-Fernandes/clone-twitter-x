@@ -14,6 +14,13 @@ import {
   ProfileUsername,
   BioText,
   StatsContainer,
+  ModalOverlay,
+  ModalHeader,
+  ModalContent,
+  CloseButton,
+  UserList,
+  UserListItem,
+  SmallAvatar,
 } from "./styles";
 
 interface UserProfile {
@@ -26,12 +33,24 @@ interface UserProfile {
   profile_picture: string | null;
 }
 
+interface SimpleUser {
+  id: number;
+  username: string;
+  profile_picture: string | null;
+}
+
 export function Profile() {
   const { username } = useParams();
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<"followers" | "following">(
+    "followers",
+  );
+  const [modalUsers, setModalUsers] = useState<SimpleUser[]>([]);
 
   useEffect(() => {
     async function loadProfile() {
@@ -76,6 +95,17 @@ export function Profile() {
     }
   }
 
+  async function openModal(type: "followers" | "following") {
+    setModalType(type);
+    setIsModalOpen(true);
+    try {
+      const response = await api.get(`users/${username}/${type}/`);
+      setModalUsers(response.data);
+    } catch (error) {
+      console.error(`Erro ao carregar ${type}:`, error);
+    }
+  }
+
   if (loading) {
     return (
       <p style={{ color: "#71767b", textAlign: "center", marginTop: "50px" }}>
@@ -98,7 +128,6 @@ export function Profile() {
 
       <ProfileDetails>
         <ProfileHeaderRow>
-          {/* Se o usuário tiver foto, mostra a imagem. Se não tiver, mostra o círculo vazio */}
           {profile?.profile_picture ? (
             <img
               src={profile.profile_picture}
@@ -124,18 +153,71 @@ export function Profile() {
 
         <ProfileName>{profile?.username}</ProfileName>
         <ProfileUsername>@{profile?.username}</ProfileUsername>
-
         {profile?.bio && <BioText>{profile.bio}</BioText>}
 
         <StatsContainer>
-          <span>
+          <span
+            style={{ cursor: "pointer" }}
+            onClick={() => openModal("following")}
+          >
             <strong>{profile?.following_count}</strong> Seguindo
           </span>
-          <span>
+          <span
+            style={{ cursor: "pointer" }}
+            onClick={() => openModal("followers")}
+          >
             <strong>{profile?.followers_count}</strong> Seguidores
           </span>
         </StatsContainer>
       </ProfileDetails>
+      {isModalOpen && (
+        <ModalOverlay onClick={() => setIsModalOpen(false)}>
+          {" "}
+          <ModalContent onClick={(e) => e.stopPropagation()}>
+            {" "}
+            <ModalHeader>
+              <CloseButton onClick={() => setIsModalOpen(false)}>✕</CloseButton>
+              <h2>{modalType === "followers" ? "Seguidores" : "Seguindo"}</h2>
+            </ModalHeader>
+            <UserList>
+              {modalUsers.map((user) => (
+                <UserListItem
+                  key={user.id}
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    navigate(`/profile/${user.username}`);
+                  }}
+                >
+                  <SmallAvatar>
+                    {user.profile_picture && (
+                      <img src={user.profile_picture} alt={user.username} />
+                    )}
+                  </SmallAvatar>
+                  <div>
+                    <strong style={{ color: "#e7e9ea", display: "block" }}>
+                      {user.username}
+                    </strong>
+                    <span style={{ color: "#71767b", fontSize: "14px" }}>
+                      @{user.username}
+                    </span>
+                  </div>
+                </UserListItem>
+              ))}
+              {modalUsers.length === 0 && (
+                <p
+                  style={{
+                    textAlign: "center",
+                    marginTop: "20px",
+                    color: "#71767b",
+                  }}
+                >
+                  Lista vazia.
+                </p>
+              )}
+            </UserList>
+          </ModalContent>
+        </ModalOverlay>
+      )}
     </FeedContainer>
   );
 }
