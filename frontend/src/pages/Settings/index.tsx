@@ -42,7 +42,6 @@ export function Settings() {
 
     const formData = new FormData();
 
-    // Só adicionamos o que o usuário preencheu
     if (username) formData.append("username", username);
     if (bio) formData.append("bio", bio);
     if (password) formData.append("password", password);

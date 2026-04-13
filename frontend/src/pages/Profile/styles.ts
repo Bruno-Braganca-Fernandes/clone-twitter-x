@@ -65,3 +65,82 @@ export const StatsContainer = styled.div`
     color: #e7e9ea;
   }
 `;
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(91, 112, 131, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const ModalContent = styled.div`
+  background-color: #000;
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+export const ModalHeader = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #2f3336;
+  
+  h2 {
+    color: #e7e9ea;
+    font-size: 20px;
+    margin-left: 16px;
+  }
+`;
+
+export const CloseButton = styled.button`
+  background: transparent;
+  border: none;
+  color: #eff3f4;
+  font-size: 1.5rem;
+  cursor: pointer;
+`;
+
+export const UserList = styled.div`
+  overflow-y: auto;
+  flex: 1;
+`;
+
+export const UserListItem = styled.div`
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid #2f3336;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+`;
+
+export const SmallAvatar = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #333639;
+  border: 1px solid #2f3336;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+`;
