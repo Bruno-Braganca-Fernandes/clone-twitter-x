@@ -70,6 +70,14 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(following, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['get'])
+    def posts(self, request, username=None):
+        user = self.get_object()
+        user_posts = Post.objects.filter(author=user).order_by('-created_at')
+        
+        serializer = PostSerializer(user_posts, many=True)
+        return Response(serializer.data)
+
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
