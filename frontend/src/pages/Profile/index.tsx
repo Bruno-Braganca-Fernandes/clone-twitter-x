@@ -23,6 +23,20 @@ import {
   SmallAvatar,
 } from "./styles";
 
+import {
+  PostCard,
+  AuthorName,
+  PostContent,
+  PostActions,
+  ActionButton,
+  CommentsSection,
+  CommentForm,
+  CommentInput,
+  TweetButton,
+  CommentList,
+  CommentItem,
+} from "../Feed/styles";
+
 interface UserProfile {
   id: number;
   username: string;
@@ -39,6 +53,20 @@ interface SimpleUser {
   profile_picture: string | null;
 }
 
+interface Post {
+  id: number;
+  author_username: string;
+  content: string;
+  likes_count: number;
+  comments_count: number;
+}
+
+interface CommentData {
+  id: number;
+  author_username: string;
+  content: string;
+}
+
 export function Profile() {
   const { username } = useParams();
   const navigate = useNavigate();
@@ -52,11 +80,72 @@ export function Profile() {
   );
   const [modalUsers, setModalUsers] = useState<SimpleUser[]>([]);
 
+  const [userPosts, setUserPosts] = useState<Post[]>([]);
+
+  const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
+  const [postComments, setPostComments] = useState<CommentData[]>([]);
+  const [newComment, setNewComment] = useState("");
+
+  async function handleLike(postId: number) {
+    try {
+      const response = await api.post(`posts/${postId}/like/`);
+      setUserPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, likes_count: response.data.likes_count }
+            : post,
+        ),
+      );
+    } catch (error) {
+      console.error("Erro ao curtir post no perfil:", error);
+    }
+  }
+
+  async function toggleComments(postId: number) {
+    if (expandedPostId === postId) {
+      setExpandedPostId(null);
+      return;
+    }
+    setExpandedPostId(postId);
+    try {
+      const response = await api.get(`posts/${postId}/comments/`);
+      setPostComments(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar comentários", error);
+    }
+  }
+
+  async function handleAddComment(event: React.SyntheticEvent, postId: number) {
+    event.preventDefault();
+    if (!newComment.trim()) return;
+
+    try {
+      const response = await api.post("comments/", {
+        post: postId,
+        content: newComment,
+      });
+
+      setPostComments([...postComments, response.data]);
+      setNewComment("");
+      setUserPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, comments_count: post.comments_count + 1 }
+            : post,
+        ),
+      );
+    } catch (error) {
+      console.error("Erro ao enviar comentário", error);
+    }
+  }
+
   useEffect(() => {
     async function loadProfile() {
       try {
         const response = await api.get(`users/${username}/`);
         setProfile(response.data);
+        const postsResponse = await api.get(`users/${username}/posts/`);
+        setUserPosts(postsResponse.data);
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
         alert("Usuário não encontrado!");
@@ -170,6 +259,92 @@ export function Profile() {
           </span>
         </StatsContainer>
       </ProfileDetails>
+      <div>
+        <h3
+          style={{
+            padding: "16px",
+            color: "#e7e9ea",
+            borderBottom: "1px solid #2f3336",
+          }}
+        >
+          Postagens
+        </h3>
+
+        {userPosts.map((post) => (
+          <PostCard key={post.id}>
+            <AuthorName style={{ cursor: "default" }}>
+              {post.author_username}
+            </AuthorName>
+            <PostContent>{post.content}</PostContent>
+
+            <PostActions>
+              <ActionButton
+                type="button"
+                activeColor="#1d9bf0"
+                onClick={() => toggleComments(post.id)}
+                $active={expandedPostId === post.id}
+              >
+                💬 {post.comments_count}
+              </ActionButton>
+              <ActionButton
+                type="button"
+                onClick={() => handleLike(post.id)}
+                $active={post.likes_count > 0}
+                activeColor="#f91880"
+              >
+                ❤️ {post.likes_count}
+              </ActionButton>
+            </PostActions>
+
+            {expandedPostId === post.id && (
+              <CommentsSection>
+                <CommentForm onSubmit={(e) => handleAddComment(e, post.id)}>
+                  <CommentInput
+                    placeholder="Postar sua resposta"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                  />
+                  <TweetButton
+                    type="submit"
+                    disabled={!newComment.trim()}
+                    style={{ padding: "6px 12px", fontSize: "13px" }}
+                  >
+                    Responder
+                  </TweetButton>
+                </CommentForm>
+
+                <CommentList>
+                  {postComments.map((comment) => (
+                    <CommentItem key={comment.id}>
+                      <strong>{comment.author_username}</strong>
+                      <span>{comment.content}</span>
+                    </CommentItem>
+                  ))}
+                  {postComments.length === 0 && (
+                    <p
+                      style={{
+                        color: "#71767b",
+                        fontSize: "13px",
+                        textAlign: "center",
+                      }}
+                    >
+                      Sem respostas ainda. Seja o primeiro!
+                    </p>
+                  )}
+                </CommentList>
+              </CommentsSection>
+            )}
+          </PostCard>
+        ))}
+
+        {userPosts.length === 0 && !loading && (
+          <p
+            style={{ textAlign: "center", marginTop: "30px", color: "#71767b" }}
+          >
+            Este usuário ainda não tem nenhuma postagem.
+          </p>
+        )}
+      </div>
       {isModalOpen && (
         <ModalOverlay onClick={() => setIsModalOpen(false)}>
           {" "}
