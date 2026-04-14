@@ -15,6 +15,7 @@ interface User {
   id: number;
   username: string;
   followers_count: number;
+  profile_picture: string | null;
 }
 
 export function Explore() {
@@ -70,7 +71,20 @@ export function Explore() {
             key={user.id}
             onClick={() => navigate(`/profile/${user.username}`)}
           >
-            <UserAvatar />
+            {user.profile_picture ? (
+              <img
+                src={user.profile_picture}
+                alt={user.username}
+                style={{
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                }}
+              />
+            ) : (
+              <UserAvatar />
+            )}
             <UserInfo>
               <UserName>{user.username}</UserName>
               <UserHandle>
