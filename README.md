@@ -37,6 +37,57 @@ Este é um projeto Full Stack desenvolvido como trabalho de conclusão do curso 
 
 Para rodar este projeto na sua máquina, você precisará ter o **Python** e o **Node.js** instalados.
 
+Você pode rodar o Back-end deste projeto de forma automatizada usando Docker (recomendado) ou pelo método tradicional.
+
+## 🐳 Método 1: Usando Docker (Recomendado)
+
+Pré-requisitos: Ter o Docker Desktop e o Node.js instalados.
+
+### 1.Clone o repositório:
+
+```Bash
+git clone https://github.com/Bruno-Braganca-Fernandes/clone-twitter-x.git
+cd clone-twitter-x
+```
+
+### 2.Suba o Back-end e o Banco de Dados:
+
+```Bash
+# Inicia os containers do Django e do PostgreSQL
+docker-compose up --build
+```
+
+A API estará rodando em http://localhost:8000/
+
+### 3.Configure o Banco de Dados (Em um novo terminal):
+
+```Bash
+# Aplique as migrações no banco do Docker
+docker-compose exec web python manage.py migrate
+
+# Crie um superusuário para o painel admin (opcional)
+docker-compose exec web python manage.py createsuperuser
+```
+
+### 4.Rode o Front-end (React):
+
+Abra um novo terminal e acesse a pasta do frontend:
+
+```Bash
+cd frontend
+npm install
+npm run dev
+```
+
+O Front-end estará rodando em http://localhost:5173/
+
+---
+
+### **💻 Método 2: Modo Manual (Sem Docker)**
+
+<details>
+<summary>Clique aqui para ver as instruções de instalação manual (Ambiente Virtual + SQLite)</summary>
+
 ### 1. Clonando o repositório
 
 ```bash
@@ -84,6 +135,8 @@ npm run dev
 _O Front-end estará rodando em `http://localhost:5173/` (ou a porta indicada pelo Vite)._
 
 _(Nota: Para testar localmente, lembre-se de alterar a `baseURL` no arquivo `frontend/src/services/api.ts` de volta para `http://127.0.0.1:8000/api/`)_
+
+</details>
 
 ---
 
