@@ -106,3 +106,34 @@ export const NavLink = styled.span`
     text-decoration: underline;
   }
 `;
+
+export const PasswordWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+`;
+
+export const EyeButton = styled.button`
+ position: absolute;
+  right: 15px;
+  top: 40%;
+  transform: translateY(-50%); 
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  transition: color 0.2s ease-in-out;
+  padding: 0;
+
+  &:hover {
+    color: #555;
+  }
+
+  &:focus {
+    outline: none;
+  }
+`;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services/api";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Container,
   LoginBox,
@@ -10,12 +11,18 @@ import {
   LinksContainer,
   NavLink,
   XLogo,
+  PasswordWrapper,
+  EyeButton,
 } from "./styles";
 
 export function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const navigate = useNavigate();
 
   async function handleSignup(event: React.SyntheticEvent) {
@@ -55,21 +62,47 @@ export function Signup() {
           required
         />
 
-        <Input
-          type="password"
-          placeholder="Crie uma senha forte"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <PasswordWrapper>
+          <Input
+            type={showPassword ? "text" : "password"}
+            placeholder="Crie uma senha forte"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{
+              width: "100%",
+              paddingRight: "45px",
+              boxSizing: "border-box",
+            }}
+          />
+          <EyeButton
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </EyeButton>
+        </PasswordWrapper>
 
-        <Input
-          type="password"
-          placeholder="Confirme a sua senha"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-        />
+        <PasswordWrapper>
+          <Input
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Confirme a sua senha"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            style={{
+              width: "100%",
+              paddingRight: "45px",
+              boxSizing: "border-box",
+            }}
+          />
+          <EyeButton
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </EyeButton>
+        </PasswordWrapper>
 
         <PrimaryButton type="submit">Criar Conta</PrimaryButton>
 

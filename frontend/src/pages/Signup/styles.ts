@@ -1,4 +1,7 @@
 import styled from 'styled-components';
+import { PasswordWrapper, EyeButton } from '../Login/styles';
+
+export { PasswordWrapper, EyeButton };
 
 export const Container = styled.div`
   display: flex;
