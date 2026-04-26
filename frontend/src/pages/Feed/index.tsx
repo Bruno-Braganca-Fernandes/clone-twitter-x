@@ -35,6 +35,18 @@ interface CommentData {
   id: number;
   author_username: string;
   content: string;
+  created_at: string;
+}
+
+function formatData(dataString: string) {
+  if (!dataString) return "";
+  const data = new Date(dataString);
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(data);
 }
 
 export function Feed() {
@@ -117,7 +129,7 @@ export function Feed() {
         content: newComment,
       });
 
-      setPostComments([...postComments, response.data]);
+      setPostComments([response.data, ...postComments]);
       setNewComment("");
 
       setPosts((prevPosts) =>
@@ -225,8 +237,29 @@ export function Feed() {
 
               <CommentList>
                 {postComments.map((comment) => (
-                  <CommentItem key={comment.id}>
-                    <strong>{comment.author_username}</strong>
+                  <CommentItem
+                    key={comment.id}
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        marginBottom: "4px",
+                      }}
+                    >
+                      <strong>{comment.author_username}</strong>
+                      <span style={{ fontSize: "12px", color: "#71767b" }}>
+                        {formatData(comment.created_at)}
+                      </span>
+                    </div>
+
+                    {/* Conteúdo do comentário */}
                     <span>{comment.content}</span>
                   </CommentItem>
                 ))}

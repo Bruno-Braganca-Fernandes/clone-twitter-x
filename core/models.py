@@ -40,5 +40,8 @@ class Comment(models.Model):
     content = models.CharField(max_length=280)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-created_at']
+
     def __str__(self):
         return f'Comment by {self.user.username} on post {self.post.id}'
