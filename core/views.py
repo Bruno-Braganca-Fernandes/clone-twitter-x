@@ -101,7 +101,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def comments(self, request, pk=None):
         post = self.get_object()
-        comments = Comment.objects.filter(post=post).order_by('created_at')
+        comments = Comment.objects.filter(post=post).order_by('-created_at')
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
