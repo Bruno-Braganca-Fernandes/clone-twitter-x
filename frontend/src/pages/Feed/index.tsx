@@ -253,13 +253,21 @@ export function Feed() {
                         marginBottom: "4px",
                       }}
                     >
-                      <strong>{comment.author_username}</strong>
+                      <AuthorName
+                        onClick={() =>
+                          navigate(`/profile/${comment.author_username}`)
+                        }
+                        style={{
+                          fontSize: "14px",
+                        }}
+                      >
+                        {comment.author_username}
+                      </AuthorName>
                       <span style={{ fontSize: "12px", color: "#71767b" }}>
                         {formatData(comment.created_at)}
                       </span>
                     </div>
 
-                    {/* Conteúdo do comentário */}
                     <span>{comment.content}</span>
                   </CommentItem>
                 ))}
