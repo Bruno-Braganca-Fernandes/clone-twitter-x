@@ -65,6 +65,18 @@ interface CommentData {
   id: number;
   author_username: string;
   content: string;
+  created_at: string;
+}
+
+function formatData(dataString: string) {
+  if (!dataString) return "";
+  const data = new Date(dataString);
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(data);
 }
 
 export function Profile() {
@@ -125,7 +137,7 @@ export function Profile() {
         content: newComment,
       });
 
-      setPostComments([...postComments, response.data]);
+      setPostComments([response.data, ...postComments]);
       setNewComment("");
       setUserPosts((prevPosts) =>
         prevPosts.map((post) =>
@@ -316,7 +328,29 @@ export function Profile() {
                 <CommentList>
                   {postComments.map((comment) => (
                     <CommentItem key={comment.id}>
-                      <strong>{comment.author_username}</strong>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        <AuthorName
+                          onClick={() =>
+                            navigate(`/profile/${comment.author_username}`)
+                          }
+                          style={{
+                            fontSize: "14px",
+                          }}
+                        >
+                          {comment.author_username}
+                        </AuthorName>
+                        <span style={{ fontSize: "12px", color: "#71767b" }}>
+                          {formatData(comment.created_at)}
+                        </span>
+                      </div>
+
                       <span>{comment.content}</span>
                     </CommentItem>
                   ))}
