@@ -171,12 +171,22 @@ export const CommentList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+
+  div{
+    display: "flex";
+    justify-content: "space-between";
+    width: "100%";
+    margin-bottom: "4px";
+  }
 `;
 
 export const CommentItem = styled.div`
   background-color: rgba(255, 255, 255, 0.02);
   padding: 10px;
   border-radius: 8px;
+   display: "flex";
+  flex-direction: "column";
+  align-items: "flex-start";
   
   strong {
     color: #e7e9ea;
