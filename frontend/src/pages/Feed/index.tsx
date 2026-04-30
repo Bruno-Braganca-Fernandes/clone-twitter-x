@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 import {
   FeedContainer,
   Header,
@@ -104,6 +105,24 @@ export function Feed() {
     }
   }
 
+  async function handleDeletePost(postId: number) {
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja excluir este post?",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`posts/${postId}/`);
+
+      setPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+
+      alert("Post excluído com sucesso!");
+    } catch (error) {
+      console.error("Erro ao excluir post:", error);
+      alert("Erro ao excluir o post.");
+    }
+  }
+
   async function toggleComments(postId: number) {
     if (expandedPostId === postId) {
       setExpandedPostId(null);
@@ -193,11 +212,32 @@ export function Feed() {
 
       {posts.map((post) => (
         <PostCard key={post.id}>
-          <AuthorName
-            onClick={() => navigate(`/profile/${post.author_username}`)}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
           >
-            {post.author_username}
-          </AuthorName>
+            <AuthorName
+              onClick={() => navigate(`/profile/${post.author_username}`)}
+            >
+              {post.author_username}
+            </AuthorName>
+
+            <button
+              onClick={() => handleDeletePost(post.id)}
+              style={{
+                background: "none",
+                border: "none",
+                color: "#f91880",
+                cursor: "pointer",
+              }}
+              title="Excluir Post"
+            >
+              <Trash2 size={18} />
+            </button>
+          </div>
           <PostContent>{post.content}</PostContent>
 
           <PostActions>
