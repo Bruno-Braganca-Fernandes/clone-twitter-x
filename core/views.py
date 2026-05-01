@@ -85,6 +85,18 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    def destroy(self, request, *args, **kwargs):
+        post = self.get_object()
+        
+        if post.author != request.user:
+            return Response(
+                {"detail": "Você não tem permissão para excluir este post."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+        self.perform_destroy(post)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(detail=False, methods=['get'])
     def feed(self, request):
         user = request.user
