@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { isAxiosError } from "axios";
 import { api } from "../../services/api";
+import { AuthContext } from "../../contexts/AuthContext";
+import { Trash2 } from "lucide-react";
 import {
   FeedContainer,
   Header,
@@ -92,6 +94,7 @@ export function Profile() {
   );
   const [modalUsers, setModalUsers] = useState<SimpleUser[]>([]);
 
+  const { user } = useContext(AuthContext);
   const [userPosts, setUserPosts] = useState<Post[]>([]);
 
   const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
@@ -148,6 +151,23 @@ export function Profile() {
       );
     } catch (error) {
       console.error("Erro ao enviar comentário", error);
+    }
+  }
+
+  async function handleDeletePost(postId: number) {
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja excluir este post?",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`posts/${postId}/`);
+      setUserPosts((prevPosts) =>
+        prevPosts.filter((post) => post.id !== postId),
+      );
+    } catch (error) {
+      console.error("Erro ao excluir post:", error);
+      alert("Erro ao excluir o post.");
     }
   }
 
@@ -284,9 +304,30 @@ export function Profile() {
 
         {userPosts.map((post) => (
           <PostCard key={post.id}>
-            <AuthorName style={{ cursor: "default" }}>
-              {post.author_username}
-            </AuthorName>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <AuthorName>{post.author_username}</AuthorName>
+
+              {user && user.username === post.author_username && (
+                <button
+                  onClick={() => handleDeletePost(post.id)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#f91880",
+                    cursor: "pointer",
+                  }}
+                  title="Excluir Post"
+                >
+                  <Trash2 size={18} />
+                </button>
+              )}
+            </div>
             <PostContent>{post.content}</PostContent>
 
             <PostActions>

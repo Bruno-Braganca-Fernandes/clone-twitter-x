@@ -51,7 +51,7 @@ function formatData(dataString: string) {
 }
 
 export function Feed() {
-  const { signOut } = useContext(AuthContext);
+  const { signOut, user } = useContext(AuthContext);
   const [posts, setPosts] = useState<Post[]>([]);
   const navigate = useNavigate();
   const [newPostContent, setNewPostContent] = useState("");
@@ -225,18 +225,20 @@ export function Feed() {
               {post.author_username}
             </AuthorName>
 
-            <button
-              onClick={() => handleDeletePost(post.id)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#f91880",
-                cursor: "pointer",
-              }}
-              title="Excluir Post"
-            >
-              <Trash2 size={18} />
-            </button>
+            {user && user.username === post.author_username && (
+              <button
+                onClick={() => handleDeletePost(post.id)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "#f91880",
+                  cursor: "pointer",
+                }}
+                title="Excluir Post"
+              >
+                <Trash2 size={18} />
+              </button>
+            )}
           </div>
           <PostContent>{post.content}</PostContent>
 
