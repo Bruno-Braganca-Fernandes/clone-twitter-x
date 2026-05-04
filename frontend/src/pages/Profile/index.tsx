@@ -154,6 +154,24 @@ export function Profile() {
     }
   }
 
+  async function handleDeleteComment(commentId: number) {
+    const confirmDelete = window.confirm(
+      "Tem certeza que deseja excluir este comentário?",
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`comments/${commentId}/`);
+
+      setPostComments((prevComments) =>
+        prevComments.filter((comment) => comment.id !== commentId),
+      );
+    } catch (error) {
+      console.error("Erro ao excluir comentário:", error);
+      alert("Erro ao excluir o comentário.");
+    }
+  }
+
   async function handleDeletePost(postId: number) {
     const confirmDelete = window.confirm(
       "Tem certeza que deseja excluir este post?",
@@ -375,21 +393,47 @@ export function Profile() {
                           justifyContent: "space-between",
                           width: "100%",
                           marginBottom: "4px",
+                          alignItems: "center",
                         }}
                       >
                         <AuthorName
                           onClick={() =>
                             navigate(`/profile/${comment.author_username}`)
                           }
-                          style={{
-                            fontSize: "14px",
-                          }}
+                          style={{ fontSize: "14px" }}
                         >
                           {comment.author_username}
                         </AuthorName>
-                        <span style={{ fontSize: "12px", color: "#71767b" }}>
-                          {formatData(comment.created_at)}
-                        </span>
+
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                          }}
+                        >
+                          <span style={{ fontSize: "12px", color: "#71767b" }}>
+                            {formatData(comment.created_at)}
+                          </span>
+
+                          {user &&
+                            user.username === comment.author_username && (
+                              <button
+                                onClick={() => handleDeleteComment(comment.id)}
+                                style={{
+                                  background: "none",
+                                  border: "none",
+                                  color: "#f91880",
+                                  cursor: "pointer",
+                                  padding: 0,
+                                  display: "flex",
+                                }}
+                                title="Excluir Comentário"
+                              >
+                                <Trash2 size={14} />{" "}
+                              </button>
+                            )}
+                        </div>
                       </div>
 
                       <span>{comment.content}</span>

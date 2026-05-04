@@ -144,6 +144,18 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    
+    def destroy(self, request, *args, **kwargs):
+        comment = self.get_object()
+        
+        if comment.user != request.user:
+            return Response(
+                {"detail": "Você não tem permissão para excluir este comentário."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+            
+        self.perform_destroy(comment)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
