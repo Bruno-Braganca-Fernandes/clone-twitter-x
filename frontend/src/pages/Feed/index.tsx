@@ -3,10 +3,9 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
+import { Header } from "../../components/Header";
 import {
   FeedContainer,
-  Header,
-  LogoutButton,
   PostCard,
   AuthorName,
   PostContent,
@@ -51,7 +50,7 @@ function formatData(dataString: string) {
 }
 
 export function Feed() {
-  const { signOut, user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [posts, setPosts] = useState<Post[]>([]);
   const navigate = useNavigate();
   const [newPostContent, setNewPostContent] = useState("");
@@ -183,36 +182,7 @@ export function Feed() {
 
   return (
     <FeedContainer>
-      <Header>
-        <h1>Página Inicial</h1>
-        <div style={{ display: "flex", gap: "16px" }}>
-          <button
-            onClick={() => navigate("/explore")}
-            style={{
-              background: "transparent",
-              color: "#1d9bf0",
-              border: "none",
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}
-          >
-            Explorar 🔍
-          </button>
-          <button
-            onClick={() => navigate("/settings")}
-            style={{
-              background: "transparent",
-              color: "#eff3f4",
-              border: "none",
-              fontWeight: "bold",
-              cursor: "pointer",
-            }}
-          >
-            ⚙️ Perfil
-          </button>
-          <LogoutButton onClick={signOut}>Sair</LogoutButton>
-        </div>
-      </Header>
+      <Header />
 
       <TweetForm onSubmit={handleCreatePost}>
         <TweetInput

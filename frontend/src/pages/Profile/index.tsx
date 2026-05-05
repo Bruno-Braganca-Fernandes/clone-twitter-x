@@ -4,10 +4,9 @@ import { isAxiosError } from "axios";
 import { api } from "../../services/api";
 import { AuthContext } from "../../contexts/AuthContext";
 import { Trash2 } from "lucide-react";
+import { ProfileHeader } from "../../components/ProfileHeader";
 import {
   FeedContainer,
-  Header,
-  BackButton,
   ProfileDetails,
   ProfileHeaderRow,
   Avatar,
@@ -255,15 +254,10 @@ export function Profile() {
 
   return (
     <FeedContainer>
-      <Header>
-        <BackButton onClick={() => navigate("/feed")}>←</BackButton>
-        <div>
-          <h1>{profile?.username}</h1>
-          <span style={{ color: "#71767b", fontSize: "13px" }}>
-            {profile?.followers_count} Seguidores
-          </span>
-        </div>
-      </Header>
+      <ProfileHeader
+        username={profile?.username || "Carregando..."}
+        followersCount={profile?.followers_count || 0}
+      />
 
       <ProfileDetails>
         <ProfileHeaderRow>
