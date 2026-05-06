@@ -144,3 +144,54 @@ export const SmallAvatar = styled.div`
     object-fit: cover;
   }
 `;
+
+export const ProfileImage = styled.img`
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid black;
+  background-color: #2f3336;
+`;
+
+export const SectionTitle = styled.h3`
+  padding: 16px;
+  color: #e7e9ea;
+  border-bottom: 1px solid #2f3336;
+  margin: 0;
+  font-size: 20px;
+`;
+
+export const EmptyStateText = styled.p`
+  text-align: center;
+  margin-top: 30px;
+  color: #71767b;
+  font-size: 15px;
+`;
+
+export const LoadingText = styled.p`
+  color: #71767b;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 16px;
+`;
+
+export const StatNumber = styled.strong`
+  color: #eff3f4;
+`;
+
+export const ModalUserName = styled.strong`
+  color: #e7e9ea;
+  display: block;
+`;
+
+export const ModalUserHandle = styled.span`
+  color: #71767b;
+  font-size: 14px;
+`;
+
+export const ModalEmptyText = styled.p`
+  text-align: center;
+  margin-top: 20px;
+  color: #71767b;
+`;

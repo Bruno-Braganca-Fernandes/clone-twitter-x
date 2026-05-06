@@ -1,26 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/api";
-import { useNavigate } from "react-router-dom";
-import { Trash2 } from "lucide-react";
 import { Header } from "../../components/Header";
 import {
   FeedContainer,
-  PostCard,
-  AuthorName,
-  PostContent,
-  PostActions,
   TweetForm,
   TweetInput,
   TweetButtonContainer,
   TweetButton,
-  ActionButton,
-  CommentsSection,
-  CommentForm,
-  CommentList,
-  CommentInput,
-  CommentItem,
 } from "./styles";
+import { Post } from "../../components/Post";
+import { ModalEmptyText } from "../Profile/styles";
 
 interface Post {
   id: number;
@@ -38,26 +28,13 @@ interface CommentData {
   created_at: string;
 }
 
-function formatData(dataString: string) {
-  if (!dataString) return "";
-  const data = new Date(dataString);
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(data);
-}
-
 export function Feed() {
   const { user } = useContext(AuthContext);
   const [posts, setPosts] = useState<Post[]>([]);
-  const navigate = useNavigate();
   const [newPostContent, setNewPostContent] = useState("");
 
   const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
   const [postComments, setPostComments] = useState<CommentData[]>([]);
-  const [newComment, setNewComment] = useState("");
 
   useEffect(() => {
     async function loadPosts() {
@@ -122,7 +99,7 @@ export function Feed() {
     }
   }
 
-  async function handleDeleteComment(commentId: number) {
+  async function handleDeleteComment(commentId: number, postId: number) {
     const confirmDelete = window.confirm(
       "Tem certeza que deseja excluir este comentário?",
     );
@@ -133,6 +110,13 @@ export function Feed() {
 
       setPostComments((prevComments) =>
         prevComments.filter((comment) => comment.id !== commentId),
+      );
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, comments_count: Math.max(0, post.comments_count - 1) }
+            : post,
+        ),
       );
     } catch (error) {
       console.error("Erro ao excluir comentário:", error);
@@ -155,18 +139,16 @@ export function Feed() {
     }
   }
 
-  async function handleAddComment(event: React.SyntheticEvent, postId: number) {
-    event.preventDefault();
-    if (!newComment.trim()) return;
+  async function handleAddComment(postId: number, content: string) {
+    if (!content.trim()) return;
 
     try {
       const response = await api.post("comments/", {
         post: postId,
-        content: newComment,
+        content: content,
       });
 
       setPostComments([response.data, ...postComments]);
-      setNewComment("");
 
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
@@ -199,154 +181,22 @@ export function Feed() {
       </TweetForm>
 
       {posts.map((post) => (
-        <PostCard key={post.id}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <AuthorName
-              onClick={() => navigate(`/profile/${post.author_username}`)}
-            >
-              {post.author_username}
-            </AuthorName>
-
-            {user && user.username === post.author_username && (
-              <button
-                onClick={() => handleDeletePost(post.id)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#f91880",
-                  cursor: "pointer",
-                }}
-                title="Excluir Post"
-              >
-                <Trash2 size={18} />
-              </button>
-            )}
-          </div>
-          <PostContent>{post.content}</PostContent>
-
-          <PostActions>
-            <ActionButton
-              type="button"
-              activeColor="#1d9bf0"
-              onClick={() => toggleComments(post.id)}
-              $active={expandedPostId === post.id}
-            >
-              💬 {post.comments_count}
-            </ActionButton>
-            <ActionButton
-              type="button"
-              onClick={() => handleLike(post.id)}
-              $active={post.likes_count > 0}
-              activeColor="#f91880"
-            >
-              ❤️ {post.likes_count}
-            </ActionButton>
-          </PostActions>
-          {expandedPostId === post.id && (
-            <CommentsSection>
-              <CommentForm onSubmit={(e) => handleAddComment(e, post.id)}>
-                <CommentInput
-                  placeholder="Postar sua resposta"
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                />
-                <TweetButton
-                  type="submit"
-                  disabled={!newComment.trim()}
-                  style={{ padding: "6px 12px", fontSize: "13px" }}
-                >
-                  Responder
-                </TweetButton>
-              </CommentForm>
-
-              <CommentList>
-                {postComments.map((comment) => (
-                  <CommentItem
-                    key={comment.id}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "100%",
-                        marginBottom: "4px",
-                        alignItems: "center",
-                      }}
-                    >
-                      <AuthorName
-                        onClick={() =>
-                          navigate(`/profile/${comment.author_username}`)
-                        }
-                        style={{ fontSize: "14px" }}
-                      >
-                        {comment.author_username}
-                      </AuthorName>
-
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "10px",
-                        }}
-                      >
-                        <span style={{ fontSize: "12px", color: "#71767b" }}>
-                          {formatData(comment.created_at)}
-                        </span>
-
-                        {user && user.username === comment.author_username && (
-                          <button
-                            onClick={() => handleDeleteComment(comment.id)}
-                            style={{
-                              background: "none",
-                              border: "none",
-                              color: "#f91880",
-                              cursor: "pointer",
-                              padding: 0,
-                              display: "flex",
-                            }}
-                            title="Excluir Comentário"
-                          >
-                            <Trash2 size={14} />{" "}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    <span>{comment.content}</span>
-                  </CommentItem>
-                ))}
-                {postComments.length === 0 && (
-                  <p
-                    style={{
-                      color: "#71767b",
-                      fontSize: "13px",
-                      textAlign: "center",
-                    }}
-                  >
-                    Sem respostas ainda. Seja o primeiro!
-                  </p>
-                )}
-              </CommentList>
-            </CommentsSection>
-          )}
-        </PostCard>
+        <Post
+          key={post.id}
+          post={post}
+          currentUser={user}
+          isExpanded={expandedPostId === post.id}
+          comments={postComments}
+          onDeletePost={handleDeletePost}
+          onLike={handleLike}
+          onToggleComments={toggleComments}
+          onAddComment={handleAddComment}
+          onDeleteComment={handleDeleteComment}
+        />
       ))}
 
       {posts.length === 0 && (
-        <p style={{ textAlign: "center", marginTop: "20px", color: "#71767b" }}>
-          Nenhum post para mostrar.
-        </p>
+        <ModalEmptyText>Nenhum post para mostrar.</ModalEmptyText>
       )}
     </FeedContainer>
   );
