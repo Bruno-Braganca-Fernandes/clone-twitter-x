@@ -1,14 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/api";
 import { Header } from "../../components/Header";
-import {
-  FeedContainer,
-  TweetForm,
-  TweetInput,
-  TweetButtonContainer,
-  TweetButton,
-} from "./styles";
+import { CreatePost } from "../../components/CreatePost";
+import { FeedContainer } from "./styles";
 import { Post } from "../../components/Post";
 import { ModalEmptyText } from "../Profile/styles";
 
@@ -31,7 +26,6 @@ interface CommentData {
 export function Feed() {
   const { user } = useContext(AuthContext);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [newPostContent, setNewPostContent] = useState("");
 
   const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
   const [postComments, setPostComments] = useState<CommentData[]>([]);
@@ -48,17 +42,10 @@ export function Feed() {
     loadPosts();
   }, []);
 
-  async function handleCreatePost(event: React.SyntheticEvent) {
-    event.preventDefault();
-
-    if (!newPostContent.trim()) return;
-
+  async function handleCreatePost(content: string) {
     try {
-      const response = await api.post("posts/", { content: newPostContent });
-
+      const response = await api.post("posts/", { content });
       setPosts((prevPosts) => [response.data, ...prevPosts]);
-
-      setNewPostContent("");
     } catch (error) {
       console.error("Erro ao criar post:", error);
       alert("Erro ao publicar o post.");
@@ -166,19 +153,7 @@ export function Feed() {
     <FeedContainer>
       <Header />
 
-      <TweetForm onSubmit={handleCreatePost}>
-        <TweetInput
-          placeholder="O que está acontecendo?"
-          value={newPostContent}
-          onChange={(e) => setNewPostContent(e.target.value)}
-          maxLength={280}
-        />
-        <TweetButtonContainer>
-          <TweetButton type="submit" disabled={!newPostContent.trim()}>
-            Postar
-          </TweetButton>
-        </TweetButtonContainer>
-      </TweetForm>
+      <CreatePost onCreatePost={handleCreatePost} />
 
       {posts.map((post) => (
         <Post
