@@ -4,6 +4,7 @@ import { api } from "../services/api";
 
 interface User {
   username: string;
+  profile_picture?: string;
 }
 
 interface AuthContextData {

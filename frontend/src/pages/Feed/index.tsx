@@ -1,11 +1,10 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { api } from "../../services/api";
-import { Header } from "../../components/Header";
 import { CreatePost } from "../../components/CreatePost";
-import { FeedContainer } from "./styles";
 import { Post } from "../../components/Post";
 import { ModalEmptyText } from "../Profile/styles";
+import { Layout } from "../../components/Layout";
 
 interface Post {
   id: number;
@@ -150,9 +149,7 @@ export function Feed() {
   }
 
   return (
-    <FeedContainer>
-      <Header />
-
+    <Layout>
       <CreatePost onCreatePost={handleCreatePost} />
 
       {posts.map((post) => (
@@ -173,6 +170,6 @@ export function Feed() {
       {posts.length === 0 && (
         <ModalEmptyText>Nenhum post para mostrar.</ModalEmptyText>
       )}
-    </FeedContainer>
+    </Layout>
   );
 }
