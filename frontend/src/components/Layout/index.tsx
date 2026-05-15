@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { Container, MainContent } from "./styles";
 import { Sidebar } from "../Sidebar";
+import { RightSidebar } from "../RightSidebar";
 
 interface LayoutProps {
   children: ReactNode;
@@ -11,10 +12,7 @@ export function Layout({ children }: LayoutProps) {
     <Container>
       <Sidebar />
       <MainContent>{children}</MainContent>
-      <div
-        style={{ width: "275px" }}
-        className="right-sidebar-placeholder"
-      ></div>
+      <RightSidebar />
     </Container>
   );
 }
