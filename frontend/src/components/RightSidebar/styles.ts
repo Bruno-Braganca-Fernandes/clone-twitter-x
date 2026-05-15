@@ -57,3 +57,30 @@ export const PlaceholderText = styled.p`
   text-align: center;
   padding: 10px 0;
 `;
+
+export const NewsItem = styled.a`
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+
+  span {
+    color: #71767b;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+`;
+
+export const NewsTitle = styled.h3`
+  color: #e7e9ea;
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 1.3;
+  margin: 0;
+`;
