@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { FeedContainer, Header, TweetButton } from '../Feed/styles';
+import { FeedContainer, Header } from '../Feed/styles';
 
 export { FeedContainer, Header };
 
@@ -30,13 +30,6 @@ export const Avatar = styled.div`
   border-radius: 50%;
   background-color: #333639;
   border: 4px solid black;
-`;
-
-export const FollowButton = styled(TweetButton) <{ $isFollowing?: boolean }>`
-  background-color: ${props => props.$isFollowing ? 'transparent' : 'white'};
-  color: ${props => props.$isFollowing ? '#eff3f4' : 'black'};
-  border: ${props => props.$isFollowing ? '1px solid #536471' : 'none'};
-  margin-top: 10px;
 `;
 
 export const ProfileName = styled.h2`

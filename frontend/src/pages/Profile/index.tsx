@@ -1,16 +1,15 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { isAxiosError } from "axios";
 import { api } from "../../services/api";
 import { AuthContext } from "../../contexts/AuthContext";
 import { ProfileHeader } from "../../components/ProfileHeader";
 import { Post } from "../../components/Post";
 import { Layout } from "../../components/Layout";
+import { FollowButton } from "../../components/FollowButton";
 import {
   ProfileDetails,
   ProfileHeaderRow,
   Avatar,
-  FollowButton,
   ProfileName,
   ProfileUsername,
   BioText,
@@ -193,32 +192,34 @@ export function Profile() {
     loadProfile();
   }, [username, navigate]);
 
-  async function handleFollowToggle() {
-    if (!profile) return;
+  useEffect(() => {
+    function handleSyncFollow(e: CustomEvent) {
+      const { username: changedUser, isFollowing: newStatus } = e.detail;
 
-    try {
-      const action = profile.is_following ? "unfollow" : "follow";
-      await api.post(`users/${profile.username}/${action}/`);
+      if (profile?.username === changedUser) {
+        setProfile((prev) => {
+          if (!prev) return prev;
+          if (prev.is_following === newStatus) return prev;
 
-      setProfile((prevProfile) => {
-        if (!prevProfile) return null;
-        const followersChange = prevProfile.is_following ? -1 : 1;
-        return {
-          ...prevProfile,
-          is_following: !prevProfile.is_following,
-          followers_count: prevProfile.followers_count + followersChange,
-        };
-      });
-    } catch (error) {
-      console.error("Erro ao alterar follow status:", error);
-
-      if (isAxiosError(error) && error.response?.data?.detail) {
-        alert(error.response.data.detail);
-      } else {
-        alert("Erro ao processar ação de seguir.");
+          return {
+            ...prev,
+            is_following: newStatus,
+            followers_count: newStatus
+              ? prev.followers_count + 1
+              : prev.followers_count - 1,
+          };
+        });
       }
     }
-  }
+
+    window.addEventListener("followChange", handleSyncFollow as EventListener);
+    return () => {
+      window.removeEventListener(
+        "followChange",
+        handleSyncFollow as EventListener,
+      );
+    };
+  }, [profile?.username]);
 
   async function openModal(type: "followers" | "following") {
     setModalType(type);
@@ -250,11 +251,10 @@ export function Profile() {
             <Avatar />
           )}
           <FollowButton
-            onClick={handleFollowToggle}
-            $isFollowing={profile?.is_following}
-          >
-            {profile?.is_following ? "Seguindo" : "Seguir"}
-          </FollowButton>
+            key={profile?.username}
+            username={profile?.username || ""}
+            initialIsFollowing={profile?.is_following}
+          />
         </ProfileHeaderRow>
 
         <ProfileName>{profile?.username}</ProfileName>

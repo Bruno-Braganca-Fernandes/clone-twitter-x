@@ -84,3 +84,73 @@ export const NewsTitle = styled.h3`
   line-height: 1.3;
   margin: 0;
 `;
+
+export const SuggestedUser = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+  }
+`;
+
+export const UserInfoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const Avatar = styled.div<{ $bgImage?: string }>`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #5c6e7e;
+  background-image: url(${props => props.$bgImage || ""});
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+`;
+
+export const UserDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
+
+export const UserName = styled.span`
+  font-weight: bold;
+  color: #e7e9ea;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+export const UserHandle = styled.span`
+  color: #71767b;
+  font-size: 15px;
+`;
+
+export const FollowButton = styled.button`
+  background-color: #eff3f4;
+  color: #0f1419;
+  border: none;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #d7dbdc;
+  }
+`;
