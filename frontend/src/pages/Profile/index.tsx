@@ -29,6 +29,7 @@ import {
   ModalUserName,
   ModalEmptyText,
   ModalUserHandle,
+  EditProfileButton,
 } from "./styles";
 
 interface UserProfile {
@@ -250,13 +251,19 @@ export function Profile() {
           ) : (
             <Avatar />
           )}
-          <FollowButton
-            key={profile?.username}
-            username={profile?.username || ""}
-            initialIsFollowing={profile?.is_following}
-          />
-        </ProfileHeaderRow>
 
+          {user?.username === profile?.username ? (
+            <EditProfileButton onClick={() => navigate("/settings")}>
+              Editar perfil
+            </EditProfileButton>
+          ) : (
+            <FollowButton
+              key={profile?.username}
+              username={profile?.username || ""}
+              initialIsFollowing={profile?.is_following}
+            />
+          )}
+        </ProfileHeaderRow>
         <ProfileName>{profile?.username}</ProfileName>
         <ProfileUsername>@{profile?.username}</ProfileUsername>
         {profile?.bio && <BioText>{profile.bio}</BioText>}

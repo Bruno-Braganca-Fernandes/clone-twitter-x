@@ -188,3 +188,19 @@ export const ModalEmptyText = styled.p`
   margin-top: 20px;
   color: #71767b;
 `;
+
+export const EditProfileButton = styled.button`
+  background-color: transparent;
+  color: #eff3f4;
+  border: 1px solid #536471;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(239, 243, 244, 0.1);
+  }
+`;
