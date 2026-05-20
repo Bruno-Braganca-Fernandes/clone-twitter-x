@@ -1,17 +1,15 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { isAxiosError } from "axios";
 import { api } from "../../services/api";
 import { AuthContext } from "../../contexts/AuthContext";
-import { Trash2 } from "lucide-react";
+import { ProfileHeader } from "../../components/ProfileHeader";
+import { Post } from "../../components/Post";
+import { Layout } from "../../components/Layout";
+import { FollowButton } from "../../components/FollowButton";
 import {
-  FeedContainer,
-  Header,
-  BackButton,
   ProfileDetails,
   ProfileHeaderRow,
   Avatar,
-  FollowButton,
   ProfileName,
   ProfileUsername,
   BioText,
@@ -23,21 +21,16 @@ import {
   UserList,
   UserListItem,
   SmallAvatar,
+  LoadingText,
+  ProfileImage,
+  StatNumber,
+  SectionTitle,
+  EmptyStateText,
+  ModalUserName,
+  ModalEmptyText,
+  ModalUserHandle,
+  EditProfileButton,
 } from "./styles";
-
-import {
-  PostCard,
-  AuthorName,
-  PostContent,
-  PostActions,
-  ActionButton,
-  CommentsSection,
-  CommentForm,
-  CommentInput,
-  TweetButton,
-  CommentList,
-  CommentItem,
-} from "../Feed/styles";
 
 interface UserProfile {
   id: number;
@@ -70,17 +63,6 @@ interface CommentData {
   created_at: string;
 }
 
-function formatData(dataString: string) {
-  if (!dataString) return "";
-  const data = new Date(dataString);
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(data);
-}
-
 export function Profile() {
   const { username } = useParams();
   const navigate = useNavigate();
@@ -99,7 +81,6 @@ export function Profile() {
 
   const [expandedPostId, setExpandedPostId] = useState<number | null>(null);
   const [postComments, setPostComments] = useState<CommentData[]>([]);
-  const [newComment, setNewComment] = useState("");
 
   async function handleLike(postId: number) {
     try {
@@ -130,18 +111,16 @@ export function Profile() {
     }
   }
 
-  async function handleAddComment(event: React.SyntheticEvent, postId: number) {
-    event.preventDefault();
-    if (!newComment.trim()) return;
+  async function handleAddComment(postId: number, content: string) {
+    if (!content.trim()) return;
 
     try {
       const response = await api.post("comments/", {
         post: postId,
-        content: newComment,
+        content: content,
       });
 
       setPostComments([response.data, ...postComments]);
-      setNewComment("");
       setUserPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId
@@ -154,7 +133,7 @@ export function Profile() {
     }
   }
 
-  async function handleDeleteComment(commentId: number) {
+  async function handleDeleteComment(commentId: number, postId: number) {
     const confirmDelete = window.confirm(
       "Tem certeza que deseja excluir este comentário?",
     );
@@ -165,6 +144,13 @@ export function Profile() {
 
       setPostComments((prevComments) =>
         prevComments.filter((comment) => comment.id !== commentId),
+      );
+      setUserPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, comments_count: Math.max(0, post.comments_count - 1) }
+            : post,
+        ),
       );
     } catch (error) {
       console.error("Erro ao excluir comentário:", error);
@@ -207,32 +193,34 @@ export function Profile() {
     loadProfile();
   }, [username, navigate]);
 
-  async function handleFollowToggle() {
-    if (!profile) return;
+  useEffect(() => {
+    function handleSyncFollow(e: CustomEvent) {
+      const { username: changedUser, isFollowing: newStatus } = e.detail;
 
-    try {
-      const action = profile.is_following ? "unfollow" : "follow";
-      await api.post(`users/${profile.username}/${action}/`);
+      if (profile?.username === changedUser) {
+        setProfile((prev) => {
+          if (!prev) return prev;
+          if (prev.is_following === newStatus) return prev;
 
-      setProfile((prevProfile) => {
-        if (!prevProfile) return null;
-        const followersChange = prevProfile.is_following ? -1 : 1;
-        return {
-          ...prevProfile,
-          is_following: !prevProfile.is_following,
-          followers_count: prevProfile.followers_count + followersChange,
-        };
-      });
-    } catch (error) {
-      console.error("Erro ao alterar follow status:", error);
-
-      if (isAxiosError(error) && error.response?.data?.detail) {
-        alert(error.response.data.detail);
-      } else {
-        alert("Erro ao processar ação de seguir.");
+          return {
+            ...prev,
+            is_following: newStatus,
+            followers_count: newStatus
+              ? prev.followers_count + 1
+              : prev.followers_count - 1,
+          };
+        });
       }
     }
-  }
+
+    window.addEventListener("followChange", handleSyncFollow as EventListener);
+    return () => {
+      window.removeEventListener(
+        "followChange",
+        handleSyncFollow as EventListener,
+      );
+    };
+  }, [profile?.username]);
 
   async function openModal(type: "followers" | "following") {
     setModalType(type);
@@ -246,222 +234,71 @@ export function Profile() {
   }
 
   if (loading) {
-    return (
-      <p style={{ color: "#71767b", textAlign: "center", marginTop: "50px" }}>
-        Carregando perfil...
-      </p>
-    );
+    return <LoadingText>Carregando perfil...</LoadingText>;
   }
 
   return (
-    <FeedContainer>
-      <Header>
-        <BackButton onClick={() => navigate("/feed")}>←</BackButton>
-        <div>
-          <h1>{profile?.username}</h1>
-          <span style={{ color: "#71767b", fontSize: "13px" }}>
-            {profile?.followers_count} Seguidores
-          </span>
-        </div>
-      </Header>
+    <Layout>
+      <ProfileHeader
+        username={profile?.username || "Carregando..."}
+        followersCount={profile?.followers_count || 0}
+      />
 
       <ProfileDetails>
         <ProfileHeaderRow>
           {profile?.profile_picture ? (
-            <img
-              src={profile.profile_picture}
-              alt="Foto de perfil"
-              style={{
-                width: "120px",
-                height: "120px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                border: "4px solid black",
-              }}
-            />
+            <ProfileImage src={profile.profile_picture} alt="Foto de perfil" />
           ) : (
             <Avatar />
           )}
-          <FollowButton
-            onClick={handleFollowToggle}
-            $isFollowing={profile?.is_following}
-          >
-            {profile?.is_following ? "Seguindo" : "Seguir"}
-          </FollowButton>
-        </ProfileHeaderRow>
 
+          {user?.username === profile?.username ? (
+            <EditProfileButton onClick={() => navigate("/settings")}>
+              Editar perfil
+            </EditProfileButton>
+          ) : (
+            <FollowButton
+              key={profile?.username}
+              username={profile?.username || ""}
+              initialIsFollowing={profile?.is_following}
+            />
+          )}
+        </ProfileHeaderRow>
         <ProfileName>{profile?.username}</ProfileName>
         <ProfileUsername>@{profile?.username}</ProfileUsername>
         {profile?.bio && <BioText>{profile.bio}</BioText>}
 
         <StatsContainer>
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={() => openModal("following")}
-          >
-            <strong>{profile?.following_count}</strong> Seguindo
+          <span onClick={() => openModal("following")}>
+            <StatNumber>{profile?.following_count}</StatNumber> Seguindo
           </span>
-          <span
-            style={{ cursor: "pointer" }}
-            onClick={() => openModal("followers")}
-          >
-            <strong>{profile?.followers_count}</strong> Seguidores
+          <span onClick={() => openModal("followers")}>
+            <StatNumber>{profile?.followers_count}</StatNumber> Seguidores
           </span>
         </StatsContainer>
       </ProfileDetails>
       <div>
-        <h3
-          style={{
-            padding: "16px",
-            color: "#e7e9ea",
-            borderBottom: "1px solid #2f3336",
-          }}
-        >
-          Postagens
-        </h3>
+        <SectionTitle>Postagens</SectionTitle>
 
         {userPosts.map((post) => (
-          <PostCard key={post.id}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <AuthorName>{post.author_username}</AuthorName>
-
-              {user && user.username === post.author_username && (
-                <button
-                  onClick={() => handleDeletePost(post.id)}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "#f91880",
-                    cursor: "pointer",
-                  }}
-                  title="Excluir Post"
-                >
-                  <Trash2 size={18} />
-                </button>
-              )}
-            </div>
-            <PostContent>{post.content}</PostContent>
-
-            <PostActions>
-              <ActionButton
-                type="button"
-                activeColor="#1d9bf0"
-                onClick={() => toggleComments(post.id)}
-                $active={expandedPostId === post.id}
-              >
-                💬 {post.comments_count}
-              </ActionButton>
-              <ActionButton
-                type="button"
-                onClick={() => handleLike(post.id)}
-                $active={post.likes_count > 0}
-                activeColor="#f91880"
-              >
-                ❤️ {post.likes_count}
-              </ActionButton>
-            </PostActions>
-
-            {expandedPostId === post.id && (
-              <CommentsSection>
-                <CommentForm onSubmit={(e) => handleAddComment(e, post.id)}>
-                  <CommentInput
-                    placeholder="Postar sua resposta"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                  />
-                  <TweetButton
-                    type="submit"
-                    disabled={!newComment.trim()}
-                    style={{ padding: "6px 12px", fontSize: "13px" }}
-                  >
-                    Responder
-                  </TweetButton>
-                </CommentForm>
-
-                <CommentList>
-                  {postComments.map((comment) => (
-                    <CommentItem key={comment.id}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          width: "100%",
-                          marginBottom: "4px",
-                          alignItems: "center",
-                        }}
-                      >
-                        <AuthorName
-                          onClick={() =>
-                            navigate(`/profile/${comment.author_username}`)
-                          }
-                          style={{ fontSize: "14px" }}
-                        >
-                          {comment.author_username}
-                        </AuthorName>
-
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                          }}
-                        >
-                          <span style={{ fontSize: "12px", color: "#71767b" }}>
-                            {formatData(comment.created_at)}
-                          </span>
-
-                          {user &&
-                            user.username === comment.author_username && (
-                              <button
-                                onClick={() => handleDeleteComment(comment.id)}
-                                style={{
-                                  background: "none",
-                                  border: "none",
-                                  color: "#f91880",
-                                  cursor: "pointer",
-                                  padding: 0,
-                                  display: "flex",
-                                }}
-                                title="Excluir Comentário"
-                              >
-                                <Trash2 size={14} />{" "}
-                              </button>
-                            )}
-                        </div>
-                      </div>
-
-                      <span>{comment.content}</span>
-                    </CommentItem>
-                  ))}
-                  {postComments.length === 0 && (
-                    <p
-                      style={{
-                        color: "#71767b",
-                        fontSize: "13px",
-                        textAlign: "center",
-                      }}
-                    >
-                      Sem respostas ainda. Seja o primeiro!
-                    </p>
-                  )}
-                </CommentList>
-              </CommentsSection>
-            )}
-          </PostCard>
+          <Post
+            key={post.id}
+            post={post}
+            currentUser={user}
+            isExpanded={expandedPostId === post.id}
+            comments={postComments}
+            onDeletePost={handleDeletePost}
+            onLike={handleLike}
+            onToggleComments={toggleComments}
+            onAddComment={handleAddComment}
+            onDeleteComment={handleDeleteComment}
+          />
         ))}
 
         {userPosts.length === 0 && !loading && (
-          <p
-            style={{ textAlign: "center", marginTop: "30px", color: "#71767b" }}
-          >
+          <EmptyStateText>
             Este usuário ainda não tem nenhuma postagem.
-          </p>
+          </EmptyStateText>
         )}
       </div>
       {isModalOpen && (
@@ -488,30 +325,18 @@ export function Profile() {
                     )}
                   </SmallAvatar>
                   <div>
-                    <strong style={{ color: "#e7e9ea", display: "block" }}>
-                      {user.username}
-                    </strong>
-                    <span style={{ color: "#71767b", fontSize: "14px" }}>
-                      @{user.username}
-                    </span>
+                    <ModalUserName>{user.username}</ModalUserName>
+                    <ModalUserHandle>@{user.username}</ModalUserHandle>
                   </div>
                 </UserListItem>
               ))}
               {modalUsers.length === 0 && (
-                <p
-                  style={{
-                    textAlign: "center",
-                    marginTop: "20px",
-                    color: "#71767b",
-                  }}
-                >
-                  Lista vazia.
-                </p>
+                <ModalEmptyText>Lista vazia.</ModalEmptyText>
               )}
             </UserList>
           </ModalContent>
         </ModalOverlay>
       )}
-    </FeedContainer>
+    </Layout>
   );
 }

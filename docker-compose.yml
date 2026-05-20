@@ -23,8 +23,6 @@ services:
       - db
     env_file:
       - .env
-    environment:
-      - DATABASE_URL=postgres://twitter_user:twitter_pass@db:5432/twitter_db
 
 volumes:
   postgres_data:

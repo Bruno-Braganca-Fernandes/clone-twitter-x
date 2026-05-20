@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services/api";
+import { ArrowLeft } from "lucide-react";
 import {
   FeedContainer,
   Header,
@@ -11,6 +12,7 @@ import {
   FileInput,
   SaveButton,
 } from "./styles";
+import { BackButton } from "../../components/ProfileHeader/styles";
 
 export function Settings() {
   const navigate = useNavigate();
@@ -74,19 +76,9 @@ export function Settings() {
   return (
     <FeedContainer>
       <Header>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            background: "transparent",
-            color: "#eff3f4",
-            fontSize: "1.2rem",
-            marginRight: "16px",
-            cursor: "pointer",
-            border: "none",
-          }}
-        >
-          ←
-        </button>
+        <BackButton onClick={() => navigate(-1)} title="Voltar">
+          <ArrowLeft size={20} />
+        </BackButton>
         <div>
           <h1>Configurações do Perfil</h1>
         </div>

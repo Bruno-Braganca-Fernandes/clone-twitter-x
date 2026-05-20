@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { FeedContainer, Header, TweetButton } from '../Feed/styles';
+import { FeedContainer, Header } from '../Feed/styles';
 
 export { FeedContainer, Header };
 
@@ -30,13 +30,6 @@ export const Avatar = styled.div`
   border-radius: 50%;
   background-color: #333639;
   border: 4px solid black;
-`;
-
-export const FollowButton = styled(TweetButton) <{ $isFollowing?: boolean }>`
-  background-color: ${props => props.$isFollowing ? 'transparent' : 'white'};
-  color: ${props => props.$isFollowing ? '#eff3f4' : 'black'};
-  border: ${props => props.$isFollowing ? '1px solid #536471' : 'none'};
-  margin-top: 10px;
 `;
 
 export const ProfileName = styled.h2`
@@ -142,5 +135,72 @@ export const SmallAvatar = styled.div`
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+`;
+
+export const ProfileImage = styled.img`
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid black;
+  background-color: #2f3336;
+`;
+
+export const SectionTitle = styled.h3`
+  padding: 16px;
+  color: #e7e9ea;
+  border-bottom: 1px solid #2f3336;
+  margin: 0;
+  font-size: 20px;
+`;
+
+export const EmptyStateText = styled.p`
+  text-align: center;
+  margin-top: 30px;
+  color: #71767b;
+  font-size: 15px;
+`;
+
+export const LoadingText = styled.p`
+  color: #71767b;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 16px;
+`;
+
+export const StatNumber = styled.strong`
+  color: #eff3f4;
+`;
+
+export const ModalUserName = styled.strong`
+  color: #e7e9ea;
+  display: block;
+`;
+
+export const ModalUserHandle = styled.span`
+  color: #71767b;
+  font-size: 14px;
+`;
+
+export const ModalEmptyText = styled.p`
+  text-align: center;
+  margin-top: 20px;
+  color: #71767b;
+`;
+
+export const EditProfileButton = styled.button`
+  background-color: transparent;
+  color: #eff3f4;
+  border: 1px solid #536471;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba(239, 243, 244, 0.1);
   }
 `;
