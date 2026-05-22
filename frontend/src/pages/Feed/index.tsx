@@ -13,6 +13,7 @@ interface Post {
   created_at: string;
   likes_count: number;
   comments_count: number;
+  is_liked: boolean;
 }
 
 interface CommentData {
@@ -58,7 +59,11 @@ export function Feed() {
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId
-            ? { ...post, likes_count: response.data.likes_count }
+            ? {
+                ...post,
+                likes_count: response.data.likes_count,
+                is_liked: response.data.is_liked,
+              }
             : post,
         ),
       );

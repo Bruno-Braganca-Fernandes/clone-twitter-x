@@ -28,13 +28,13 @@ class PostInteractionTests(APITestCase):
         response = self.client.post(url)
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertTrue(response.data['liked'])
+        self.assertTrue(response.data['is_liked'])
         self.assertEqual(response.data['likes_count'], 1)
 
         response_unlike = self.client.post(url)
         
         self.assertEqual(response_unlike.status_code, status.HTTP_200_OK)
-        self.assertFalse(response_unlike.data['liked'])
+        self.assertFalse(response_unlike.data['is_liked'])
         self.assertEqual(response_unlike.data['likes_count'], 0)
 
 class UserAndCommentTests(APITestCase):
