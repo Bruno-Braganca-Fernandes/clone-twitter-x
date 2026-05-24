@@ -54,6 +54,7 @@ interface Post {
   content: string;
   likes_count: number;
   comments_count: number;
+  is_liked: boolean;
 }
 
 interface CommentData {
@@ -88,7 +89,11 @@ export function Profile() {
       setUserPosts((prevPosts) =>
         prevPosts.map((post) =>
           post.id === postId
-            ? { ...post, likes_count: response.data.likes_count }
+            ? {
+                ...post,
+                likes_count: response.data.likes_count,
+                is_liked: response.data.is_liked,
+              }
             : post,
         ),
       );

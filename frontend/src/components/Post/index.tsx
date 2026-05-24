@@ -28,6 +28,7 @@ export interface PostData {
   content: string;
   likes_count: number;
   comments_count: number;
+  is_liked: boolean;
 }
 
 export interface CommentData {
@@ -117,10 +118,10 @@ export function Post({
 
         <ActionButton
           onClick={() => onLike(post.id)}
-          $active={post.likes_count > 0}
+          $active={post.is_liked}
           activeColor="#f91880"
         >
-          <Heart size={18} fill={post.likes_count > 0 ? "#f91880" : "none"} />{" "}
+          <Heart size={18} fill={post.is_liked ? "#f91880" : "none"} />{" "}
           {post.likes_count}
         </ActionButton>
       </PostActions>

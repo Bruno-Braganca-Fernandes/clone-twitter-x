@@ -75,7 +75,7 @@ class UserViewSet(viewsets.ModelViewSet):
         user = self.get_object()
         user_posts = Post.objects.filter(author=user).order_by('-created_at')
         
-        serializer = PostSerializer(user_posts, many=True)
+        serializer = PostSerializer(user_posts, many=True, context={'request': request})
         return Response(serializer.data)
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -126,15 +126,15 @@ class PostViewSet(viewsets.ModelViewSet):
 
         if like_exists:
             Like.objects.filter(post=post, user=user).delete()
-            liked = False
+            is_liked = False
         else:
             Like.objects.create(post=post, user=user)
-            liked = True
+            is_liked = True
 
         total_likes = Like.objects.filter(post=post).count()
 
         return Response({
-            'liked': liked,
+            'is_liked': is_liked,
             'likes_count': total_likes
         })
 
