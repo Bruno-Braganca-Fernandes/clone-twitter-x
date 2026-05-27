@@ -6,6 +6,7 @@ import { Feed } from "./pages/Feed";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Explore } from "./pages/Explore";
 import { Settings } from "./pages/Settings";
+import { Layout } from "./components/Layout";
 
 function App() {
   return (
@@ -15,9 +16,11 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/feed" element={<Feed />} />
-          <Route path="/profile/:username" element={<Profile />} />
-          <Route path="/explore" element={<Explore />} />
+          <Route element={<Layout />}>
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/profile/:username" element={<Profile />} />
+          </Route>
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </AuthProvider>

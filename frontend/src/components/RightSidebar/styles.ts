@@ -5,12 +5,12 @@ export const Container = styled.aside`
   padding: 12px 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px; 
+  gap: 16px;
   height: 100vh;
   position: sticky;
   top: 0;
 
-  @media (max-width: 1000px) {
+  @media (max-width: 1024px) {
     display: none;
   }
 `;

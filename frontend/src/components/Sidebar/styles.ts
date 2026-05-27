@@ -8,9 +8,37 @@ export const SidebarContainer = styled.aside`
   height: 100vh;
   position: sticky;
   top: 0;
-  
-  @media (max-width: 600px) {
-    display: none;
+
+  @media (max-width: 1024px) {
+    width: 88px;
+    padding: 20px 8px;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    top: auto;
+    width: 100%;
+    height: auto;
+    min-height: unset;
+    z-index: 50;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+    background-color: #000;
+    border-top: 1px solid #2f3336;
+
+    nav {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      flex: 1;
+    }
   }
 `;
 
@@ -25,7 +53,7 @@ export const NavItem = styled.div`
   border-radius: 9999px;
   cursor: pointer;
   transition: background-color 0.2s;
-  width: fit-content; 
+  width: fit-content;
   padding-right: 24px;
 
   &:hover {
@@ -34,6 +62,26 @@ export const NavItem = styled.div`
 
   span {
     font-weight: 400;
+  }
+
+  @media (max-width: 1024px) {
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    padding: 12px;
+    padding-right: 12px;
+    margin-bottom: 4px;
+
+    span {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    margin-bottom: 0;
+    width: auto;
+    height: auto;
+    padding: 10px 16px;
   }
 `;
 
@@ -48,6 +96,10 @@ export const LogoContainer = styled.div`
 
   &:hover {
     background-color: rgba(231, 233, 234, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -67,12 +119,24 @@ export const UserCard = styled.div`
   border-radius: 9999px;
   cursor: pointer;
   transition: background-color 0.2s;
-  
-  margin-top: auto; 
+
+  margin-top: auto;
   margin-bottom: 20px;
 
   &:hover {
     background-color: rgba(231, 233, 234, 0.1);
+  }
+
+  @media (max-width: 1024px) {
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    padding: 6px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
@@ -91,6 +155,10 @@ export const UserDetails = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
 `;
 
 export const UserName = styled.span`
