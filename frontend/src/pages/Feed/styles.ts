@@ -6,6 +6,20 @@ export const FeedContainer = styled.div`
   border-left: 1px solid #2f3336;
   border-right: 1px solid #2f3336;
   min-height: 100vh;
+  width: 100%;
+
+  @media (max-width: 1024px) {
+    max-width: none;
+    flex: 1;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: 100%;
+    border-left: none;
+    border-right: none;
+    padding-bottom: 72px;
+  }
 `;
 
 export const Header = styled.header`

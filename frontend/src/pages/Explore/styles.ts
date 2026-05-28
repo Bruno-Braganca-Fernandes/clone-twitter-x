@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { FeedContainer, Header } from '../Feed/styles';
+import { Header } from '../Feed/styles';
 
-export { FeedContainer, Header };
+export { Header };
 
 export const UserCard = styled.div`
   padding: 16px;

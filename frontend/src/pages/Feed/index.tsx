@@ -4,7 +4,6 @@ import { api } from "../../services/api";
 import { CreatePost } from "../../components/CreatePost";
 import { Post } from "../../components/Post";
 import { ModalEmptyText } from "../Profile/styles";
-import { Layout } from "../../components/Layout";
 
 interface Post {
   id: number;
@@ -154,7 +153,7 @@ export function Feed() {
   }
 
   return (
-    <Layout>
+    <>
       <CreatePost onCreatePost={handleCreatePost} />
 
       {posts.map((post) => (
@@ -175,6 +174,6 @@ export function Feed() {
       {posts.length === 0 && (
         <ModalEmptyText>Nenhum post para mostrar.</ModalEmptyText>
       )}
-    </Layout>
+    </>
   );
 }

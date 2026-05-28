@@ -4,7 +4,6 @@ import { api } from "../../services/api";
 import { AuthContext } from "../../contexts/AuthContext";
 import { ProfileHeader } from "../../components/ProfileHeader";
 import { Post } from "../../components/Post";
-import { Layout } from "../../components/Layout";
 import { FollowButton } from "../../components/FollowButton";
 import {
   ProfileDetails,
@@ -243,7 +242,7 @@ export function Profile() {
   }
 
   return (
-    <Layout>
+    <>
       <ProfileHeader
         username={profile?.username || "Carregando..."}
         followersCount={profile?.followers_count || 0}
@@ -342,6 +341,6 @@ export function Profile() {
           </ModalContent>
         </ModalOverlay>
       )}
-    </Layout>
+    </>
   );
 }

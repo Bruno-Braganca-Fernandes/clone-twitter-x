@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 import { api } from "../../services/api";
+import { BackButton } from "../../components/ProfileHeader/styles";
 import {
-  FeedContainer,
   Header,
   UserCard,
   UserAvatar,
@@ -41,21 +42,11 @@ export function Explore() {
   }, []);
 
   return (
-    <FeedContainer>
+    <>
       <Header>
-        <button
-          onClick={() => navigate("/feed")}
-          style={{
-            background: "transparent",
-            color: "#eff3f4",
-            fontSize: "1.2rem",
-            marginRight: "16px",
-            cursor: "pointer",
-            border: "none",
-          }}
-        >
-          ←
-        </button>
+        <BackButton onClick={() => navigate(-1)} title="Voltar">
+          <ArrowLeft size={20} />
+        </BackButton>
         <div>
           <h1>Explorar</h1>
         </div>
@@ -100,6 +91,6 @@ export function Explore() {
           Nenhum usuário encontrado.
         </p>
       )}
-    </FeedContainer>
+    </>
   );
 }

@@ -1,17 +1,15 @@
-import { type ReactNode } from "react";
+import { Outlet } from "react-router-dom";
 import { Container, MainContent } from "./styles";
 import { Sidebar } from "../Sidebar";
 import { RightSidebar } from "../RightSidebar";
 
-interface LayoutProps {
-  children: ReactNode;
-}
-
-export function Layout({ children }: LayoutProps) {
+export function Layout() {
   return (
     <Container>
       <Sidebar />
-      <MainContent>{children}</MainContent>
+      <MainContent>
+        <Outlet />
+      </MainContent>
       <RightSidebar />
     </Container>
   );
