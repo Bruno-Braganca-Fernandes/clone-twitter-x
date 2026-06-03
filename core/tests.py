@@ -68,3 +68,27 @@ class UserAndCommentTests(APITestCase):
 
         self.assertEqual(response_unfollow.status_code, status.HTTP_200_OK)
         self.assertEqual(self.user1.following.count(), 0)
+
+class AuthenticationTests(APITestCase):
+    def test_user_registration(self):
+        url = '/api/users/'
+        data = {
+            'username': 'novousuario',
+            'password': 'senhaforte123'
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(User.objects.filter(username='novousuario').exists())
+
+    def test_user_login(self):
+        User.objects.create_user(username='loginuser', password='loginpass123')
+        
+        url = '/api/token/'
+        data = {
+            'username': 'loginuser',
+            'password': 'loginpass123'
+        }
+        response = self.client.post(url, data)
+        
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('access', response.data)
