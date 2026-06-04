@@ -38,16 +38,18 @@ class UserSerializer(serializers.ModelSerializer):
         return user 
 
     def get_followers_count(self, obj):
-        return obj.followers.count()
+        return len(obj.followers.all())
 
     def get_following_count(self, obj):
-        return obj.following.count()
+        return len(obj.following.all())
 
     def get_is_following(self, obj):
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
             return False
-        return obj.followers.filter(id=request.user.id).exists()
+        return any(
+            follower.id == request.user.id for follower in obj.followers.all()
+        )
 
 class CommentSerializer(serializers.ModelSerializer):
     author_username = serializers.ReadOnlyField(source='user.username')
@@ -69,16 +71,18 @@ class PostSerializer(serializers.ModelSerializer):
         read_only_fields = ['author']
 
     def get_likes_count(self, obj):
-        return obj.likes.count()
+        return len(obj.likes.all())
 
     def get_comments_count(self, obj):
-        return obj.comments.count()
+        return len(obj.comments.all())
 
     def get_is_liked(self, obj):
         request = self.context.get('request')
         if not request or not request.user.is_authenticated:
             return False
-        return obj.likes.filter(user=request.user).exists()
+        return any(
+            like.user_id == request.user.id for like in obj.likes.all()
+        )
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
