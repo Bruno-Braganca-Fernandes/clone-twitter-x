@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -9,8 +10,18 @@ from .serializers import (
     UserSerializer, PostSerializer, CommentSerializer, LikeSerializer
 )
 
+
+def optimized_post_queryset():
+    return (
+        Post.objects
+        .select_related('author')
+        .prefetch_related('likes', 'comments')
+        .order_by('-created_at')
+    )
+
+
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.prefetch_related('followers', 'following')
     serializer_class = UserSerializer
     lookup_field = 'username'
 
@@ -21,12 +32,12 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'])
     def follow(self, request, username=None):
-        user_to_follow = self.get_object() 
-        current_user = request.user        
+        user_to_follow = self.get_object()
+        current_user = request.user
 
         if user_to_follow == current_user:
             return Response(
-                {"detail": "Você não pode seguir a si mesmo."}, 
+                {"detail": "Você não pode seguir a si mesmo."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -48,7 +59,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if request.method == 'GET':
             serializer = self.get_serializer(user)
             return Response(serializer.data)
-            
+
         elif request.method == 'PATCH':
             serializer = self.get_serializer(user, data=request.data, partial=True)
             if serializer.is_valid():
@@ -73,39 +84,41 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def posts(self, request, username=None):
         user = self.get_object()
-        user_posts = Post.objects.filter(author=user).order_by('-created_at')
-        
+        user_posts = optimized_post_queryset().filter(author=user)
         serializer = PostSerializer(user_posts, many=True, context={'request': request})
         return Response(serializer.data)
 
+
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all().order_by('-created_at')
+    queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+    def get_queryset(self):
+        return optimized_post_queryset()
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
     def destroy(self, request, *args, **kwargs):
         post = self.get_object()
-        
+
         if post.author != request.user:
             return Response(
                 {"detail": "Você não tem permissão para excluir este post."},
                 status=status.HTTP_403_FORBIDDEN
             )
-            
+
         self.perform_destroy(post)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False, methods=['get'])
     def feed(self, request):
         user = request.user
-        
         following_users = user.following.all()
-        
-        queryset = Post.objects.filter(author__in=following_users) | Post.objects.filter(author=user)
 
-        queryset = queryset.order_by('-created_at').distinct()
+        queryset = optimized_post_queryset().filter(
+            Q(author__in=following_users) | Q(author=user)
+        ).distinct()
 
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -113,7 +126,12 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def comments(self, request, pk=None):
         post = self.get_object()
-        comments = Comment.objects.filter(post=post).order_by('-created_at')
+        comments = (
+            Comment.objects
+            .filter(post=post)
+            .select_related('user', 'post')
+            .order_by('-created_at')
+        )
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
 
@@ -138,27 +156,36 @@ class PostViewSet(viewsets.ModelViewSet):
             'likes_count': total_likes
         })
 
+
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all().order_by('-created_at')
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        return (
+            Comment.objects
+            .select_related('user', 'post')
+            .order_by('-created_at')
+        )
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-    
+
     def destroy(self, request, *args, **kwargs):
         comment = self.get_object()
-        
+
         if comment.user != request.user:
             return Response(
                 {"detail": "Você não tem permissão para excluir este comentário."},
                 status=status.HTTP_403_FORBIDDEN
             )
-            
+
         self.perform_destroy(comment)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class LikeViewSet(viewsets.ModelViewSet):
-    queryset = Like.objects.all()
+    queryset = Like.objects.select_related('user', 'post')
     serializer_class = LikeSerializer
 
     def perform_create(self, serializer):

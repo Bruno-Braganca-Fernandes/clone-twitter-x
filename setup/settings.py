@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'cloudinary',
 
     'rest_framework',
+    'drf_spectacular',
     'rest_framework_simplejwt',
     'corsheaders',
     'core',
@@ -148,6 +149,15 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Clone do X API',
+    'DESCRIPTION': 'API REST do clone do X (Twitter) — usuários, posts, likes e comentários.',
+    'VERSION': '1.0.0',
 }
 
 from datetime import timedelta

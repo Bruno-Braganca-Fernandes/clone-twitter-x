@@ -57,7 +57,7 @@ export function RightSidebar() {
     async function fetchUsers() {
       try {
         const response = await api.get("/users/");
-        const allUsers = response.data;
+        const allUsers = response.data.results;
 
         const otherUsers = allUsers.filter(
           (u: SuggestedUserType) =>
