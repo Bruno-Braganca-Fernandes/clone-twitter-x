@@ -11,6 +11,9 @@ import {
   Input,
   FileInput,
   SaveButton,
+  DangerZone,
+  DangerText,
+  DeleteButton,
 } from "./styles";
 import { BackButton } from "../../components/ProfileHeader/styles";
 
@@ -63,6 +66,23 @@ export function Settings() {
       alert(
         "Erro ao atualizar o perfil. Talvez esse nome de usuário já exista.",
       );
+    }
+  }
+
+  async function handleDeleteAccount() {
+    const confirmed = window.confirm(
+      "Tem certeza que deseja excluir sua conta permanentemente? Isso apagará todos os seus posts e comentários.",
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`users/${username}/`);
+      localStorage.clear();
+      navigate("/login");
+    } catch (error) {
+      console.error("Erro ao excluir conta", error);
+      alert("Erro ao excluir a conta. Tente novamente.");
     }
   }
 
@@ -130,6 +150,17 @@ export function Settings() {
 
         <SaveButton type="submit">Salvar Alterações</SaveButton>
       </SettingsForm>
+
+      <DangerZone>
+        <Label style={{ color: "#f4212e" }}>Zona de Perigo</Label>
+        <DangerText>
+          Esta ação é irreversível. Ao excluir sua conta, todos os seus dados,
+          publicações e interações serão perdidos para sempre.
+        </DangerText>
+        <DeleteButton type="button" onClick={handleDeleteAccount}>
+          Excluir Conta
+        </DeleteButton>
+      </DangerZone>
     </FeedContainer>
   );
 }

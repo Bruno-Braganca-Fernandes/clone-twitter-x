@@ -30,6 +30,16 @@ class UserViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated()]
 
+    def destroy(self, request, *args, **kwargs):
+        user_to_delete = self.get_object()
+        if user_to_delete != request.user:
+            return Response(
+                {"detail": "Você não tem permissão para excluir esta conta."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        self.perform_destroy(user_to_delete)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
     @action(detail=True, methods=['post'])
     def follow(self, request, username=None):
         user_to_follow = self.get_object()

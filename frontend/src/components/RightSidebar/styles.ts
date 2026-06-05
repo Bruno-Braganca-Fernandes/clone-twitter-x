@@ -7,8 +7,30 @@ export const Container = styled.aside`
   flex-direction: column;
   gap: 16px;
   height: 100vh;
+  align-self: flex-start;
+  flex-shrink: 0;
   position: sticky;
   top: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #536471 transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #536471;
+    border-radius: 9999px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #71767b;
+  }
 
   @media (max-width: 1024px) {
     display: none;

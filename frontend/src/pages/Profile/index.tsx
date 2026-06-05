@@ -29,6 +29,7 @@ import {
   ModalEmptyText,
   ModalUserHandle,
   EditProfileButton,
+  ProfilePage,
 } from "./styles";
 
 interface UserProfile {
@@ -238,11 +239,15 @@ export function Profile() {
   }
 
   if (loading) {
-    return <LoadingText>Carregando perfil...</LoadingText>;
+    return (
+      <ProfilePage>
+        <LoadingText>Carregando perfil...</LoadingText>
+      </ProfilePage>
+    );
   }
 
   return (
-    <>
+    <ProfilePage>
       <ProfileHeader
         username={profile?.username || "Carregando..."}
         followersCount={profile?.followers_count || 0}
@@ -341,6 +346,6 @@ export function Profile() {
           </ModalContent>
         </ModalOverlay>
       )}
-    </>
+    </ProfilePage>
   );
 }

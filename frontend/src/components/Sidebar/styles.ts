@@ -6,8 +6,17 @@ export const SidebarContainer = styled.aside`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  max-height: 100vh;
+  min-height: 0;
+  align-self: flex-start;
+  flex-shrink: 0;
   position: sticky;
   top: 0;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @media (max-width: 1024px) {
     width: 88px;
@@ -22,7 +31,9 @@ export const SidebarContainer = styled.aside`
     top: auto;
     width: 100%;
     height: auto;
+    max-height: none;
     min-height: unset;
+    overflow-y: visible;
     z-index: 50;
     flex-direction: row;
     justify-content: space-around;

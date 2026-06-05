@@ -3,6 +3,11 @@ import { FeedContainer, Header } from '../Feed/styles';
 
 export { FeedContainer, Header };
 
+export const ProfilePage = styled.div`
+  min-height: 100vh;
+  width: 100%;
+`;
+
 export const BackButton = styled.button`
   background: transparent;
   color: #eff3f4;

@@ -62,3 +62,34 @@ export const SaveButton = styled(TweetButton)`
   align-self: flex-start;
   margin-top: 10px;
 `;
+
+export const DangerZone = styled.div`
+  padding: 20px;
+  margin-top: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const DangerText = styled.p`
+  color: #71767b;
+  font-size: 14px;
+  line-height: 1.4;
+`;
+
+export const DeleteButton = styled.button`
+  background-color: transparent;
+  color: #f4212e;
+  border: 1px solid #f4212e;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+  align-self: flex-start;
+
+  &:hover {
+    background-color: rgba(244, 33, 46, 0.1);
+  }
+`;
