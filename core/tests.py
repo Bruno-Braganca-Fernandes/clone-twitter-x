@@ -74,6 +74,7 @@ class AuthenticationTests(APITestCase):
         url = '/api/users/'
         data = {
             'username': 'novousuario',
+            'email': 'novousuario@example.com',
             'password': 'senhaforte123'
         }
         response = self.client.post(url, data)
