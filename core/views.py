@@ -1,13 +1,21 @@
+from django.conf import settings
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.core.mail import send_mail
 from django.db.models import Q
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.views import APIView
 
 from .models import User, Post, Comment, Like
 from .serializers import (
-    UserSerializer, PostSerializer, CommentSerializer, LikeSerializer
+    UserSerializer, PostSerializer, CommentSerializer, LikeSerializer,
+    PasswordResetRequestSerializer, SetNewPasswordSerializer,
 )
 
 
@@ -200,3 +208,67 @@ class LikeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class PasswordResetRequestView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(request=PasswordResetRequestSerializer, responses={200: None})
+    def post(self, request):
+        serializer = PasswordResetRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        email = serializer.validated_data['email']
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            user = None
+
+        if user:
+            uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+            token = PasswordResetTokenGenerator().make_token(user)
+            reset_link = f'{settings.FRONTEND_URL}/reset-password/{uidb64}/{token}/'
+
+            send_mail(
+                subject='Redefinição de senha — Clone do X',
+                message=(
+                    f'Olá, {user.username}!\n\n'
+                    f'Você solicitou a redefinição de senha. '
+                    f'Acesse o link abaixo para criar uma nova senha:\n\n'
+                    f'{reset_link}\n\n'
+                    f'Se você não fez esta solicitação, ignore este e-mail.'
+                ),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+            )
+
+        return Response(
+            {
+                'detail': (
+                    'Se o e-mail estiver cadastrado, você receberá '
+                    'instruções para redefinir sua senha.'
+                )
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(request=SetNewPasswordSerializer, responses={200: None})
+    def post(self, request):
+        serializer = SetNewPasswordSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        user = serializer.user
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response(
+            {'detail': 'Senha redefinida com sucesso.'},
+            status=status.HTTP_200_OK,
+        )

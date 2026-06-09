@@ -61,7 +61,12 @@ export function Login() {
           </EyeButton>
         </PasswordWrapper>
         <PrimaryButton type="submit">Avançar</PrimaryButton>
-        <OutlineButton type="button">Esqueceu a senha?</OutlineButton>
+        <OutlineButton
+          type="button"
+          onClick={() => navigate("/forgot-password")}
+        >
+          Esqueceu a senha?
+        </OutlineButton>
         <LinksContainer>
           Não tem uma conta?{" "}
           <NavLink onClick={() => navigate("/signup")}>Inscreva-se</NavLink>

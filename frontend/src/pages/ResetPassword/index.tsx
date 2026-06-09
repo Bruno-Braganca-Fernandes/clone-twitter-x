@@ -1,32 +1,30 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { api } from "../../services/api";
+import { useNavigate, useParams } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { api } from "../../services/api";
 import {
   Container,
   LoginBox,
+  XLogo,
   Title,
   Input,
   PrimaryButton,
   LinksContainer,
   NavLink,
-  XLogo,
   PasswordWrapper,
   EyeButton,
-} from "./styles";
+} from "../Login/styles";
 
-export function Signup() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+export function ResetPassword() {
+  const navigate = useNavigate();
+  const { uid, token } = useParams<{ uid: string; token: string }>();
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const navigate = useNavigate();
-
-  async function handleSignup(event: React.SyntheticEvent) {
+  async function handleSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
 
     if (password !== confirmPassword) {
@@ -35,47 +33,45 @@ export function Signup() {
     }
 
     try {
-      await api.post("users/", {
-        username,
-        email,
-        password,
+      await api.post("password-reset-confirm/", {
+        uidb64: uid,
+        token,
+        new_password: password,
       });
-
-      alert("Conta criada com sucesso! Faça o login.");
+      alert("Senha redefinida com sucesso!");
       navigate("/login");
     } catch (error) {
-      console.error("Erro ao criar conta:", error);
-      alert("Erro ao criar a conta. Talvez este nome de usuário já exista.");
+      console.error("Erro ao redefinir senha:", error);
+
+      const err = error as {
+        response?: {
+          data?: {
+            new_password?: string[];
+            detail?: string;
+          };
+        };
+      };
+
+      if (err.response?.data?.new_password) {
+        alert("Atenção: " + err.response.data.new_password[0]);
+      } else if (err.response?.data?.detail) {
+        alert(err.response.data.detail);
+      } else {
+        alert("Link inválido ou expirado. Solicite um novo link.");
+      }
     }
   }
 
   return (
     <Container>
-      <LoginBox onSubmit={handleSignup}>
+      <LoginBox onSubmit={handleSubmit}>
         <XLogo>X</XLogo>
-
-        <Title>Inscreva-se no X</Title>
-
-        <Input
-          type="text"
-          placeholder="Escolha um nome de usuário"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-
-        <Input
-          type="email"
-          placeholder="Digite seu melhor e-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <Title>Criar nova senha</Title>
 
         <PasswordWrapper>
           <Input
             type={showPassword ? "text" : "password"}
-            placeholder="Crie uma senha forte"
+            placeholder="Nova senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -96,7 +92,7 @@ export function Signup() {
         <PasswordWrapper>
           <Input
             type={showConfirmPassword ? "text" : "password"}
-            placeholder="Confirme a sua senha"
+            placeholder="Confirme a nova senha"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
@@ -114,10 +110,10 @@ export function Signup() {
           </EyeButton>
         </PasswordWrapper>
 
-        <PrimaryButton type="submit">Criar Conta</PrimaryButton>
+        <PrimaryButton type="submit">Redefinir senha</PrimaryButton>
 
         <LinksContainer>
-          Já tem uma conta?{" "}
+          Lembrou a senha?{" "}
           <NavLink onClick={() => navigate("/login")}>Entrar</NavLink>
         </LinksContainer>
       </LoginBox>
