@@ -136,6 +136,17 @@ _O Front-end estará rodando em `http://localhost:5173/` (ou a porta indicada pe
 
 _(Nota: Para testar localmente, lembre-se de alterar a `baseURL` no arquivo `frontend/src/services/api.ts` de volta para `http://127.0.0.1:8000/api/`)_
 
+### 🔐 Recuperação de Senha (Nota Técnica)
+
+Para fins de demonstração neste portfólio e para evitar bloqueios de _Sandbox_ em provedores gratuitos de SMTP, o sistema de e-mails está configurado para o modo **Console Backend**. O fluxo de segurança (geração de tokens efêmeros e validação em duas etapas) está 100% funcional.
+
+**Como testar o fluxo de "Esqueci minha senha" localmente:**
+
+1. Na tela de Login, clique em "Esqueceu a senha?".
+2. Insira o e-mail cadastrado na sua conta de teste.
+3. Em vez de o sistema enviar um e-mail real, o link seguro de recuperação será impresso **diretamente no terminal** onde o Django (`runserver`) está rodando.
+4. Copie o link do terminal, cole no navegador e crie sua nova senha.
+
 </details>
 
 ---
