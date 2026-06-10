@@ -15,27 +15,48 @@ Este é um projeto Full Stack desenvolvido como trabalho de conclusão do curso 
 
 ## 🛠️ Tecnologias Utilizadas
 
-### Back-end (API Restful)
+### Back-end (API Restful & Infraestrutura)
 
 - **Python & Django:** Framework principal.
 - **Django REST Framework (DRF):** Construção e roteamento da API.
 - **PostgreSQL:** Banco de dados de produção (hospedado no Render).
 - **SQLite:** Banco de dados de desenvolvimento local.
 - **Autenticação:** JWT (JSON Web Tokens).
+- **Cloudinary:** Armazenamento em nuvem para arquivos de mídia (foto de perfil).
 - **CI/CD:** GitHub Actions configurado para rodar testes automatizados.
-- **Whitenoise & Gunicorn:** Servidor e arquivos estáticos em produção.
 
 ### Front-end (Interface Visual)
 
 - **React (com Vite):** Framework principal para construção da UI.
+- **TypeScript:** Tipagem estática para maior segurança no código.
 - **Axios:** Integração com a API do Django.
 - **Hospedagem:** Vercel.
+
+### Automação & Arquitetura Orientada a Eventos
+
+- **Webhooks:** Disparos assíncronos via `threading` no Django.
+- **n8n:** Orquestrador de automação de fluxos.
+- **Discord API:** Recebimento de alertas de moderação em tempo real.
+
+---
+
+## 🤖 Moderação de Conteúdo (Event-Driven)
+
+O projeto conta com um fluxo de mensageria assíncrona para auditoria de conteúdo. 
+Quando um post é criado pelo usuário no Front-end:
+1. O Django salva o dado e dispara um **Webhook** em segundo plano (*Fire and Forget*), sem travar o tempo de resposta da API.
+2. O payload em JSON é interceptado pelo servidor **n8n**.
+3. O orquestrador analisa o texto do post usando nós condicionais lógicos e identifica palavras restritas ou ofensivas.
+4. Caso a regra seja acionada, um alerta formatado é enviado instantaneamente para um canal administrativo no **Discord**.
+
+> **Status de Infraestrutura:** O orquestrador (n8n) atualmente está configurado para rodar em ambiente local (`localhost`). Para testar este fluxo com a API em produção no Render, é necessário subir uma instância self-hosted do n8n ou utilizar um túnel reverso.
 
 ---
 
 ## ⚙️ Como rodar o projeto localmente
 
 Para rodar este projeto na sua máquina, você precisará ter o **Python** e o **Node.js** instalados.
+Não se esqueça de criar o arquivo `.env` na raiz do Back-end com as suas variáveis de ambiente (Cloudinary, JWT Secret, URL do n8n, etc.).
 
 Você pode rodar o Back-end deste projeto de forma automatizada usando Docker (recomendado) ou pelo método tradicional.
 
@@ -43,25 +64,25 @@ Você pode rodar o Back-end deste projeto de forma automatizada usando Docker (r
 
 Pré-requisitos: Ter o Docker Desktop e o Node.js instalados.
 
-### 1.Clone o repositório:
+### 1. Clone o repositório:
 
-```Bash
-git clone https://github.com/Bruno-Braganca-Fernandes/clone-twitter-x.git
+```bash
+git clone [https://github.com/Bruno-Braganca-Fernandes/clone-twitter-x.git](https://github.com/Bruno-Braganca-Fernandes/clone-twitter-x.git)
 cd clone-twitter-x
 ```
 
-### 2.Suba o Back-end e o Banco de Dados:
+### 2. Suba o Back-end e o Banco de Dados:
 
-```Bash
+```bash
 # Inicia os containers do Django e do PostgreSQL
 docker-compose up --build
 ```
 
 A API estará rodando em http://localhost:8000/
 
-### 3.Configure o Banco de Dados (Em um novo terminal):
+### 3. Configure o Banco de Dados (Em um novo terminal):
 
-```Bash
+```bash
 # Aplique as migrações no banco do Docker
 docker-compose exec web python manage.py migrate
 
@@ -69,11 +90,11 @@ docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
 ```
 
-### 4.Rode o Front-end (React):
+### 4. Rode o Front-end (React):
 
 Abra um novo terminal e acesse a pasta do frontend:
 
-```Bash
+```bash
 cd frontend
 npm install
 npm run dev
@@ -91,7 +112,7 @@ O Front-end estará rodando em http://localhost:5173/
 ### 1. Clonando o repositório
 
 ```bash
-git clone https://github.com/Bruno-Braganca-Fernandes/clone-twitter-x.git
+git clone [https://github.com/Bruno-Braganca-Fernandes/clone-twitter-x.git](https://github.com/Bruno-Braganca-Fernandes/clone-twitter-x.git)
 cd clone-twitter-x
 ```
 
