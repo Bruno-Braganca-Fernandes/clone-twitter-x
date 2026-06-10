@@ -11,6 +11,20 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.views import APIView
+import requests
+import threading
+import logging
+
+logger = logging.getLogger(__name__)
+
+def dispatch_n8n_webhook(url, payload):
+    print(f"\n🚀 [N8N] Tentando enviar webhook para: {url}")
+    print(f"📦 [N8N] Payload: {payload}")
+    try:
+        response = requests.post(url, json=payload, timeout=5)
+        print(f"✅ [N8N] Sucesso! Código de resposta: {response.status_code}\n")
+    except Exception as e:
+        print(f"❌ [N8N] Falha ao enviar: {e}\n")
 
 from .models import User, Post, Comment, Like
 from .serializers import (
@@ -115,7 +129,20 @@ class PostViewSet(viewsets.ModelViewSet):
         return optimized_post_queryset()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        post = serializer.save(author=self.request.user)
+
+        if getattr(settings, 'N8N_WEBHOOK_URL', None):
+            payload = {
+                "event": "new_post",
+                "post_id": post.id,
+                "author": post.author.username,
+                "content": post.content,
+                "created_at": post.created_at.isoformat()
+            }
+            threading.Thread(
+                target=dispatch_n8n_webhook, 
+                args=(settings.N8N_WEBHOOK_URL, payload)
+            ).start()
 
     def destroy(self, request, *args, **kwargs):
         post = self.get_object()
