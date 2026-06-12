@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services/api";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Feather } from "lucide-react";
 import {
   Container,
   LoginBox,
@@ -52,9 +52,13 @@ export function Signup() {
   return (
     <Container>
       <LoginBox onSubmit={handleSignup}>
-        <XLogo>X</XLogo>
+        <XLogo>
+          <Feather size={40} />
+        </XLogo>
 
-        <Title>Inscreva-se no X</Title>
+        <Title>
+          Inscreva-se no <Feather size={20} />
+        </Title>
 
         <Input
           type="text"

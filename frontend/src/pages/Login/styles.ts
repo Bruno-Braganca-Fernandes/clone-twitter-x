@@ -39,7 +39,7 @@ export const Title = styled.h1`
   font-size: 31px;
   font-weight: bold;
   margin-bottom: 30px;
-  text-align: left;
+  text-align: center;
 `;
 
 export const Input = styled.input`

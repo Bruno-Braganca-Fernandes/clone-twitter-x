@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Feather } from "lucide-react";
+
 import { api } from "../../services/api";
 import {
   Container,
@@ -22,7 +24,7 @@ export function ForgotPassword() {
     try {
       await api.post("password-reset/", { email });
       alert(
-        "Se o e-mail estiver cadastrado, você receberá um link em instantes."
+        "Se o e-mail estiver cadastrado, você receberá um link em instantes.",
       );
       navigate("/login");
     } catch (error) {
@@ -34,7 +36,9 @@ export function ForgotPassword() {
   return (
     <Container>
       <LoginBox onSubmit={handleSubmit}>
-        <XLogo>X</XLogo>
+        <XLogo>
+          <Feather size={40} />
+        </XLogo>
         <Title>Esqueceu a senha?</Title>
         <Input
           type="email"

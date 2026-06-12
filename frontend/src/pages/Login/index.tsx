@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Feather } from "lucide-react";
 import {
   Container,
   LoginBox,
@@ -31,8 +31,12 @@ export function Login() {
   return (
     <Container>
       <LoginBox onSubmit={handleLogin}>
-        <XLogo>X</XLogo>
-        <Title>Entrar no X</Title>
+        <XLogo>
+          <Feather size={40} />
+        </XLogo>
+        <Title>
+          Entrar no <Feather size={20} />
+        </Title>
         <Input
           type="text"
           placeholder="Nome de usuário"
